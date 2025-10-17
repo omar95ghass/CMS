@@ -21,8 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $result->fetch_assoc();
         $_SESSION['username'] = $username;
         $_SESSION['user_id'] = $user['id'];
-        $role = $user['role'];
+        $_SESSION['role'] = $user['role'];
         $_SESSION['windowNumber'] = $user['window_number'];
+        $role = $user['role'];
 
         // if($user['role' === 'admin']){
         //     header('Location: ../services.php');

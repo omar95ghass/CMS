@@ -12,11 +12,10 @@ try {
     }
     
     $input = json_decode(file_get_contents('php://input'), true);
-    $queueId = $input['queue_id'] ?? 0;
     $targetUserId = $input['target_user_id'] ?? 0;
     $currentUserId = $_SESSION['user_id'];
     
-    if ($queueId <= 0 || $targetUserId <= 0) {
+    if ($targetUserId <= 0) {
         echo json_encode(['status' => 'error', 'message' => 'بيانات غير صحيحة']);
         exit();
     }
@@ -94,7 +93,7 @@ try {
             INSERT INTO queue_transfers (original_queue_id, new_queue_id, from_user_id, to_user_id, clinic, number, transferred_at) 
             VALUES (?, ?, ?, ?, ?, ?, NOW())
         ");
-        $stmt->bind_param('iiiisi', $queueId, $newQueueId, $currentUserId, $targetUserId, $queueData['clinic'], $queueData['number']);
+        $stmt->bind_param('iiiisi', $queueData['id'], $newQueueId, $currentUserId, $targetUserId, $queueData['clinic'], $queueData['number']);
         $stmt->execute();
         $stmt->close();
         
