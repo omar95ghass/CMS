@@ -83,7 +83,19 @@ $tables = [
     PRIMARY KEY (`id`),
     KEY `fk_user_queue` (`user_id`),
     CONSTRAINT `fk_user_queue` FOREIGN KEY (`user_id`) REFERENCES `queue_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-    ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;"
+    ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;",
+
+    "CREATE TABLE IF NOT EXISTS `error_logs` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `error_type` varchar(50) NOT NULL,
+    `error_message` text NOT NULL,
+    `user_agent` text,
+    `ip_address` varchar(45),
+    `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+    PRIMARY KEY (`id`),
+    KEY `idx_error_type` (`error_type`),
+    KEY `idx_created_at` (`created_at`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;"
 ];
 
 // ننفذ كل جملة

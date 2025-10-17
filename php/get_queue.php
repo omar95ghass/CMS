@@ -2,34 +2,81 @@
 session_start();
 header('Content-Type: application/json');
 
-// الاتصال بقاعدة البيانات
-include 'db.php';
-
-// تحقق من تسجيل الدخول
+// التحقق من تسجيل الدخول
 if (!isset($_SESSION['user_id'])) {
-    error_log('User not logged in');
     echo json_encode(['status' => 'error', 'message' => 'User not logged in']);
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
-$today = date('Y-m-d');
-$sql = "SELECT * FROM queue WHERE user_id = ? AND date = ? ORDER BY id DESC";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param('is', $user_id, $today);
-$stmt->execute();
-$result = $stmt->get_result();
-
-$queueData = [];
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $queueData[] = $row;
+try {
+    include 'db.php';
+    
+    $user_id = $_SESSION['user_id'];
+    $today = date('Y-m-d');
+    
+    // جلب الأدوار مع ترتيب أفضل
+    $sql = "SELECT id, number, clinic, status, created_at, date 
+            FROM queue 
+            WHERE user_id = ? AND date = ? 
+            ORDER BY 
+                CASE status 
+                    WHEN 'called' THEN 1 
+                    WHEN 'waiting' THEN 2 
+                    WHEN 'completed' THEN 3 
+                    ELSE 4 
+                END, 
+                id ASC";
+    
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('is', $user_id, $today);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $queueData = [];
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            // إضافة معلومات إضافية مفيدة
+            $row['waiting_time'] = calculateWaitingTime($row['created_at']);
+            $row['status_text'] = getStatusText($row['status']);
+            $queueData[] = $row;
+        }
     }
+    
     echo json_encode(['status' => 'success', 'data' => $queueData]);
-} else {
-    echo json_encode(['status' => 'success', 'data' => []]);
+    
+    $stmt->close();
+    
+} catch (Exception $e) {
+    error_log("Get queue error: " . $e->getMessage());
+    echo json_encode(['status' => 'error', 'message' => 'Database error occurred']);
+} finally {
+    if (isset($conn)) {
+        $conn->close();
+    }
 }
 
-$stmt->close();
-$conn->close();
+// دالة حساب وقت الانتظار
+function calculateWaitingTime($createdAt) {
+    $now = new DateTime();
+    $created = new DateTime($createdAt);
+    $diff = $now->diff($created);
+    
+    if ($diff->h > 0) {
+        return $diff->h . 'س ' . $diff->i . 'د';
+    } else {
+        return $diff->i . 'د';
+    }
+}
+
+// دالة ترجمة حالة الدور
+function getStatusText($status) {
+    $statuses = [
+        'waiting' => 'في الانتظار',
+        'called' => 'مدعو',
+        'announced' => 'تم الإعلان',
+        'completed' => 'مكتمل'
+    ];
+    
+    return isset($statuses[$status]) ? $statuses[$status] : $status;
+}
 ?>

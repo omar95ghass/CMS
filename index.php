@@ -1,171 +1,194 @@
-<!DOCTYPE html>
-<html dir="rtl" lang="ar">
-<head>
-  <meta charset="UTF-8">
-  <title>الخدمات الفعالة</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="icon" type="image/x-icon" href="images/logo/logo.ico">
-  <style>
-    body {
-      font-family: "Cairo", Arial, sans-serif;
-      background: #f4f6f9;
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+<?php
+session_start();
+$page_title = "الخدمات الفعالة";
+$breadcrumbs = [
+    ['title' => 'الرئيسية', 'url' => 'index.php']
+];
+include 'includes/header.php';
+?>
+
+<style>
+    .service-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
     }
-    header {
-      background: #1f3c88;
-      color: white;
-      text-align: center;
-      padding: 20px 10px;
-    }
-    header img {
-      max-width: 80px;
-      margin-bottom: 10px;
-    }
-    header h1 {
-      font-size: 26px;
-      margin: 0;
-    }
-    header h4 {
-      font-size: 16px;
-      font-weight: 300;
-      margin-top: 5px;
-    }
-    main {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 30px 15px;
-    }
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 20px;
-      width: 100%;
-      max-width: 1000px;
-    }
+    
     .service-card {
-      background: white;
-      border: 2px solid #1f3c88;
-      border-radius: 12px;
-      padding: 30px 20px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: bold;
-      color: #1f3c88;
-      cursor: pointer;
-      transition: all 0.2s;
+        background: white;
+        border: 2px solid #667eea;
+        border-radius: 15px;
+        padding: 30px 20px;
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        color: #667eea;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
+    
     .service-card:hover {
-      background: #e9efff;
-      transform: scale(1.03);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
     }
-
-    footer {
-      position: relative;
-      background: #fff;
-      border-top: 1px solid #ddd;
-      text-align: center;
-    }
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      padding: 10px;
-    }
-    .footer-links a {
-      font-size: 16px;
-      padding: 12px 20px;
-      border-radius: 8px;
-      min-width: 160px;
-    }
-
+    
     .ticker {
         width: 100%;
-        background: #1f3c88;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: #fff;
         overflow: hidden;
         position: relative;
-        height: 40px;
+        height: 50px;
         display: flex;
         align-items: center;
-        }
-
-        .ticker-content {
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+    
+    .ticker-content {
         display: inline-block;
         white-space: nowrap;
-        animation: ticker 25s linear infinite;
-        }
-
-        .ticker-content span {
+        animation: ticker 30s linear infinite;
+    }
+    
+    .ticker-content span {
         display: inline-block;
-        margin-left: 80px; /* فراغ بين الرسائل */
+        margin-left: 100px;
         font-size: 16px;
-        }
-
-        /* الحركة المستمرة */
-        @keyframes ticker {
+        font-weight: 500;
+    }
+    
+    @keyframes ticker {
         0%   { transform: translateX(-100%); }
         100% { transform: translateX(100%); }
-        }
-
-
-
-    /* رسائل التنبيه */
-    .alert-box {
-      position: fixed;
-      top: 20px;
-      right: 50%;
-      transform: translateX(50%);
-      min-width: 250px;
-      padding: 15px 20px;
-      border-radius: 8px;
-      text-align: center;
-      z-index: 1000;
-      display: none;
-      font-size: 16px;
     }
-    .alert-success { background: #28a745; color: #fff; }
-    .alert-warning { background: #ffc107; color: #000; }
-    .alert-error   { background: #dc3545; color: #fff; }
-  </style>
-</head>
-<body>
-  <!-- الهيدر -->
-  <header>
-    <img src="images/logo/logo.png" alt="Logo">
-    <h1>مركز خدمة المواطن - النافذة الواحدة</h1>
-    <h4>المس الخدمة لقطع الدور</h4>
-  </header>
+    
+    .welcome-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .welcome-section h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+    
+    .welcome-section p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+    
+    .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin: 30px 0;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 10px;
+    }
+    
+    .stat-label {
+        color: #666;
+        font-size: 1.1rem;
+    }
+</style>
 
-  <!-- المحتوى الرئيسي -->
-  <main>
-    <div id="clinicGrid" class="card-grid"></div>
-  </main>
+<div class="welcome-section">
+    <h1>مرحباً بكم في مركز خدمة المواطن</h1>
+    <p>النافذة الواحدة - المس الخدمة لقطع الدور</p>
+</div>
 
-  <!-- الفوتر -->
-  <footer>
-    <div class="ticker">
+<div class="stats-cards">
+    <div class="stat-card">
+        <div class="stat-number" id="totalServices">0</div>
+        <div class="stat-label">الخدمات المتاحة</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" id="activeQueues">0</div>
+        <div class="stat-label">الأدوار النشطة</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" id="completedToday">0</div>
+        <div class="stat-label">مكتملة اليوم</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0">اختر الخدمة المطلوبة</h4>
+    </div>
+    <div class="card-body">
+        <div id="clinicGrid" class="service-grid"></div>
+    </div>
+</div>
+
+<div class="ticker">
     <div class="ticker-content">
-        <span>✅ مركز خدمة المواطن في دمر</span>
+        <span>✅ مركز خدمة المواطن - النافذة الواحدة</span>
         <span>⚠️ يرجى الاحتفاظ بتذكرة الدور</span>
         <span>📢 لا تخرج من الصالة لتتمكن من سماع النداء</span>
-        <span> نتمنى لكم يوماً طيباً</span>
+        <span>🕐 أوقات العمل: من 8:00 صباحاً إلى 4:00 مساءً</span>
+        <span>💡 نتمنى لكم يوماً طيباً</span>
     </div>
-    </div>
+</div>
 
-  </footer>
+<?php include 'includes/footer.php'; ?>
 
-  <!-- صندوق التنبيه -->
-  <div id="alertBox" class="alert-box"></div>
-
-  <script>
+<script>
+    // تحديث الإحصائيات
+    function updateStats() {
+        fetch('php/get_active_clinics.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('totalServices').textContent = data.clinics.length;
+                }
+            })
+            .catch(error => console.error('Error fetching stats:', error));
+            
+        // جلب إحصائيات الأدوار
+        fetch('php/statics.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('activeQueues').textContent = data.active_queues || 0;
+                    document.getElementById('completedToday').textContent = data.completed_today || 0;
+                }
+            })
+            .catch(error => console.error('Error fetching queue stats:', error));
+    }
     
-        async function generateQueueTicketImage(clinic, queueNumber) {
+    // تحديث الإحصائيات كل 30 ثانية
+    setInterval(updateStats, 30000);
+    updateStats();
+
+    async function generateQueueTicketImage(clinic, queueNumber) {
         const widthMm = 80;
         const pxPerMm = 7;
         const width = widthMm * pxPerMm;
