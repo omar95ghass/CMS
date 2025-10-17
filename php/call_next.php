@@ -22,11 +22,14 @@ if ($result->num_rows > 0) {
     $id = $row['id'];
     $number = $row['number'];
 
-    // تحديث حالة الدور إلى 'called'
-    $stmt_update = $conn->prepare("UPDATE queue SET status = 'called' WHERE number = ? AND date = ?");
-    $stmt_update->bind_param('is', $number, $today);
+    // تحديث حالة الدور إلى 'called' - فقط للدور المحدد
+    $stmt_update = $conn->prepare("UPDATE queue SET status = 'called' WHERE id = ?");
+    $stmt_update->bind_param('i', $id);
     $stmt_update->execute();
     $stmt_update->close();
+    
+    // تسجيل النداء في السجل
+    error_log("Queue called: Number $number (ID: $id) by user $user");
 
     echo json_encode(['status' => 'success', 'number' => $number, 'id' => $id]);
 } else {

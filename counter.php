@@ -724,13 +724,22 @@
             const targetUserId = document.getElementById('transferWindow').value;
             const clinic = document.getElementById('transferClinic').value;
 
+            console.log('Transfer data:', { number, targetUserId, clinic });
+            console.log('Current queueData:', queueData);
+
             if (!number || !targetUserId || !clinic) {
                 showAlert('يرجى ملء جميع الحقول', 'error');
                 return;
             }
 
+            // التحقق من وجود البيانات
+            if (!queueData || queueData.length === 0) {
+                showAlert('جاري تحميل قائمة الأدوار، يرجى المحاولة لاحقاً', 'warning');
+                return;
+            }
+
             // البحث عن الدور في قائمة الأدوار الحالية
-            const queueItem = currentQueue.find(item => 
+            const queueItem = queueData.find(item => 
                 item.number == number && item.clinic === clinic && item.status === 'waiting'
             );
 
@@ -770,13 +779,23 @@
         // جلب الشبابيك المتاحة عند إدخال رقم الدور
         document.getElementById('transferNumber').addEventListener('input', function() {
             const number = this.value;
+            console.log('Transfer number input:', number);
+            console.log('Current queueData:', queueData);
+            
             if (number) {
+                // التحقق من وجود البيانات
+                if (!queueData || queueData.length === 0) {
+                    showAlert('جاري تحميل قائمة الأدوار، يرجى المحاولة لاحقاً', 'warning');
+                    return;
+                }
+                
                 // البحث عن الدور في قائمة الأدوار الحالية
-                const queueItem = currentQueue.find(item => 
+                const queueItem = queueData.find(item => 
                     item.number == number && item.status === 'waiting'
                 );
 
                 if (queueItem) {
+                    console.log('Found queue item:', queueItem);
                     document.getElementById('transferClinic').value = queueItem.clinic;
                     loadAvailableWindows(queueItem.clinic);
                 } else {
