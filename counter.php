@@ -333,12 +333,18 @@
             text-align: center;
         }
 
-        .modal input {
+        .modal input, .modal select {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ddd;
             border-radius: 5px;
+        }
+
+        .form-control {
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            color: #495057;
         }
 
         .modal button {
@@ -387,6 +393,7 @@
                     <button class="action-btn warning" id="recallBtn">إعادة نداء</button>
                     <button class="action-btn" id="startService">بدء الخدمة</button>
                     <button class="action-btn danger" id="completeService">إنهاء الخدمة</button>
+                    <button class="action-btn info" id="transferBtn">تحويل</button>
                     <button class="action-btn danger" id="logoutBtn">تسجيل الخروج</button>
                 </div>
 
@@ -408,6 +415,22 @@
             <div>
                 <button onclick="callSpecificNumber()">نداء</button>
                 <button onclick="closeModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نموذج التحويل -->
+    <div id="transferModal" class="modal">
+        <div class="modal-content">
+            <h3>تحويل الدور</h3>
+            <input type="number" id="transferNumber" placeholder="أدخل رقم الدور">
+            <select id="transferWindow" class="form-control">
+                <option value="">اختر الشباك...</option>
+            </select>
+            <input type="text" id="transferClinic" placeholder="الخدمة" readonly>
+            <div>
+                <button onclick="confirmTransfer()">تحويل</button>
+                <button onclick="closeTransferModal()">إلغاء</button>
             </div>
         </div>
     </div>
@@ -576,6 +599,12 @@
             document.getElementById('specificNumber').focus();
         });
 
+        // فتح نموذج التحويل
+        document.getElementById('transferBtn').addEventListener('click', function() {
+            document.getElementById('transferModal').style.display = 'block';
+            document.getElementById('transferNumber').focus();
+        });
+
         // نداء على دور محدد
         function callSpecificNumber() {
             const number = document.getElementById('specificNumber').value;
@@ -613,6 +642,14 @@
         function closeModal() {
             document.getElementById('specificModal').style.display = 'none';
             document.getElementById('specificNumber').value = '';
+        }
+
+        // إغلاق نموذج التحويل
+        function closeTransferModal() {
+            document.getElementById('transferModal').style.display = 'none';
+            document.getElementById('transferNumber').value = '';
+            document.getElementById('transferClinic').value = '';
+            document.getElementById('transferWindow').innerHTML = '<option value="">اختر الشباك...</option>';
         }
 
         // بدء الخدمة
@@ -681,11 +718,111 @@
             }
         });
 
+        // دالة التحويل
+        function confirmTransfer() {
+            const number = document.getElementById('transferNumber').value;
+            const targetUserId = document.getElementById('transferWindow').value;
+            const clinic = document.getElementById('transferClinic').value;
+
+            if (!number || !targetUserId || !clinic) {
+                showAlert('يرجى ملء جميع الحقول', 'error');
+                return;
+            }
+
+            // البحث عن الدور في قائمة الأدوار الحالية
+            const queueItem = currentQueue.find(item => 
+                item.number == number && item.clinic === clinic && item.status === 'waiting'
+            );
+
+            if (!queueItem) {
+                showAlert('الدور غير موجود أو غير متاح للتحويل', 'error');
+                return;
+            }
+
+            // إرسال طلب التحويل
+            fetch('php/transfer_queue.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    queue_id: queueItem.id,
+                    target_user_id: targetUserId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showAlert(`تم تحويل الدور رقم ${number} للشباك ${data.target_window}`, 'success');
+                    closeTransferModal();
+                    updateQueue();
+                } else {
+                    showAlert(data.message || 'فشل في التحويل', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error transferring queue:', error);
+                showAlert('خطأ في التحويل', 'error');
+            });
+        }
+
+        // جلب الشبابيك المتاحة عند إدخال رقم الدور
+        document.getElementById('transferNumber').addEventListener('input', function() {
+            const number = this.value;
+            if (number) {
+                // البحث عن الدور في قائمة الأدوار الحالية
+                const queueItem = currentQueue.find(item => 
+                    item.number == number && item.status === 'waiting'
+                );
+
+                if (queueItem) {
+                    document.getElementById('transferClinic').value = queueItem.clinic;
+                    loadAvailableWindows(queueItem.clinic);
+                } else {
+                    document.getElementById('transferClinic').value = '';
+                    document.getElementById('transferWindow').innerHTML = '<option value="">اختر الشباك...</option>';
+                }
+            }
+        });
+
+        // جلب الشبابيك المتاحة
+        function loadAvailableWindows(clinic) {
+            fetch('php/get_available_windows.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ clinic: clinic })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const select = document.getElementById('transferWindow');
+                    select.innerHTML = '<option value="">اختر الشباك...</option>';
+                    data.windows.forEach(window => {
+                        const option = document.createElement('option');
+                        option.value = window.id;
+                        option.textContent = window.display_name;
+                        select.appendChild(option);
+                    });
+                } else {
+                    showAlert('خطأ في جلب الشبابيك المتاحة', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading windows:', error);
+                showAlert('خطأ في جلب الشبابيك المتاحة', 'error');
+            });
+        }
+
         // إغلاق النموذج عند النقر خارجه
         window.onclick = function(event) {
-            const modal = document.getElementById('specificModal');
-            if (event.target === modal) {
+            const specificModal = document.getElementById('specificModal');
+            const transferModal = document.getElementById('transferModal');
+            if (event.target === specificModal) {
                 closeModal();
+            } else if (event.target === transferModal) {
+                closeTransferModal();
             }
         }
 

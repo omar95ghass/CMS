@@ -77,11 +77,16 @@ $tables = [
     `user_id` int(11) NOT NULL,
     `clinic` varchar(100) NOT NULL,
     `number` int(11) NOT NULL,
-    `status` enum('waiting','called','announced','completed') NOT NULL DEFAULT 'waiting',
+    `status` enum('waiting','called','announced','completed','transferred') NOT NULL DEFAULT 'waiting',
     `date` date NOT NULL,
     `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+    `transferred_from` int(11) DEFAULT NULL COMMENT 'الشباك الذي تم التحويل منه',
+    `transferred_to` int(11) DEFAULT NULL COMMENT 'الشباك الذي تم التحويل إليه',
+    `transferred_at` timestamp NULL DEFAULT NULL COMMENT 'وقت التحويل',
     PRIMARY KEY (`id`),
     KEY `fk_user_queue` (`user_id`),
+    KEY `idx_clinic_number_date` (`clinic`, `number`, `date`),
+    KEY `idx_status_date` (`status`, `date`),
     CONSTRAINT `fk_user_queue` FOREIGN KEY (`user_id`) REFERENCES `queue_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
     ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;",
 
@@ -105,6 +110,23 @@ $tables = [
     `updated_at` timestamp NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp(),
     PRIMARY KEY (`id`),
     UNIQUE KEY `setting_key` (`setting_key`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;",
+
+    "CREATE TABLE IF NOT EXISTS `queue_transfers` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `original_queue_id` int(11) NOT NULL,
+    `new_queue_id` int(11) NOT NULL,
+    `from_user_id` int(11) NOT NULL,
+    `to_user_id` int(11) NOT NULL,
+    `clinic` varchar(100) NOT NULL,
+    `number` int(11) NOT NULL,
+    `transferred_at` timestamp NOT NULL DEFAULT current_timestamp(),
+    PRIMARY KEY (`id`),
+    KEY `idx_from_user` (`from_user_id`),
+    KEY `idx_to_user` (`to_user_id`),
+    KEY `idx_transferred_at` (`transferred_at`),
+    CONSTRAINT `fk_transfer_from_user` FOREIGN KEY (`from_user_id`) REFERENCES `queue_users` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_transfer_to_user` FOREIGN KEY (`to_user_id`) REFERENCES `queue_users` (`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;"
 ];
 

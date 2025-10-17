@@ -5,20 +5,27 @@ header('Content-Type: application/json');
 try {
     include 'db.php';
     
-    $today = date('Y-m-d');
+    // التحقق من تسجيل الدخول
+    if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
+        echo json_encode(['status' => 'error', 'message' => 'غير مصرح بالوصول']);
+        exit();
+    }
     
-    // جلب النداءات التي تحتاج إلى إعلان (called أو announced) لجميع الشبابيك
-    // هذا الملف يستخدم في display.php لعرض جميع النداءات
+    $today = date('Y-m-d');
+    $userId = $_SESSION['user_id'];
+    
+    // جلب النداءات الخاصة بالشباك المحدد فقط
     $stmt = $conn->prepare("
         SELECT q.id, q.number, q.clinic, q.status, q.created_at, u.window_number 
         FROM queue q 
         JOIN queue_users u ON q.user_id = u.id 
-        WHERE q.date = ? 
+        WHERE q.user_id = ? 
+        AND q.date = ? 
         AND q.status IN ('called', 'announced') 
         AND q.created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)
         ORDER BY q.created_at ASC
     ");
-    $stmt->bind_param("s", $today);
+    $stmt->bind_param("is", $userId, $today);
     $stmt->execute();
     $result = $stmt->get_result();
     
@@ -33,14 +40,15 @@ try {
     echo json_encode([
         'status' => 'success',
         'calls' => $calls,
-        'count' => count($calls)
+        'count' => count($calls),
+        'window_number' => $_SESSION['window_number'] ?? 'غير محدد'
     ]);
     
 } catch (Exception $e) {
-    error_log("Get pending calls error: " . $e->getMessage());
+    error_log("Get window calls error: " . $e->getMessage());
     echo json_encode([
         'status' => 'error',
-        'message' => 'Database error occurred',
+        'message' => 'خطأ في جلب نداءات الشباك',
         'calls' => []
     ]);
 }
