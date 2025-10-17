@@ -21,23 +21,33 @@ try {
         exit();
     }
     
+    // البحث عن الدور بالرقم والخدمة بدلاً من ID
+    $number = $input['number'] ?? 0;
+    $clinic = $input['clinic'] ?? '';
+    
+    if ($number <= 0 || empty($clinic)) {
+        echo json_encode(['status' => 'error', 'message' => 'رقم الدور والخدمة مطلوبان']);
+        exit();
+    }
+    
     // التحقق من أن الدور موجود ومملوك للمستخدم الحالي
     $stmt = $conn->prepare("
         SELECT q.*, u.window_number as current_window 
         FROM queue q 
         JOIN queue_users u ON q.user_id = u.id 
-        WHERE q.id = ? AND q.user_id = ? AND q.date = CURDATE()
+        WHERE q.user_id = ? AND q.number = ? AND q.clinic = ? AND q.date = CURDATE() AND q.status = 'waiting'
     ");
-    $stmt->bind_param('ii', $queueId, $currentUserId);
+    $stmt->bind_param('iis', $currentUserId, $number, $clinic);
     $stmt->execute();
     $result = $stmt->get_result();
     
     if ($result->num_rows === 0) {
-        echo json_encode(['status' => 'error', 'message' => 'الدور غير موجود أو غير مملوك لك']);
+        echo json_encode(['status' => 'error', 'message' => 'الدور غير موجود أو غير متاح للتحويل']);
         exit();
     }
     
     $queueData = $result->fetch_assoc();
+    $queueId = $queueData['id']; // الحصول على ID من النتيجة
     $stmt->close();
     
     // التحقق من أن المستخدم الهدف موجود وله نفس الخدمة

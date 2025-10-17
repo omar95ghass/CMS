@@ -746,7 +746,8 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    queue_id: queueItem.id,
+                    number: number,
+                    clinic: clinic,
                     target_user_id: targetUserId
                 })
             })
@@ -781,12 +782,18 @@
                 } else {
                     document.getElementById('transferClinic').value = '';
                     document.getElementById('transferWindow').innerHTML = '<option value="">اختر الشباك...</option>';
+                    showAlert('الدور غير موجود أو غير متاح للتحويل', 'error');
                 }
+            } else {
+                document.getElementById('transferClinic').value = '';
+                document.getElementById('transferWindow').innerHTML = '<option value="">اختر الشباك...</option>';
             }
         });
 
         // جلب الشبابيك المتاحة
         function loadAvailableWindows(clinic) {
+            console.log('Loading windows for clinic:', clinic);
+            
             fetch('php/get_available_windows.php', {
                 method: 'POST',
                 headers: {
@@ -794,24 +801,34 @@
                 },
                 body: JSON.stringify({ clinic: clinic })
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('Available windows data:', data);
                 if (data.status === 'success') {
                     const select = document.getElementById('transferWindow');
                     select.innerHTML = '<option value="">اختر الشباك...</option>';
-                    data.windows.forEach(window => {
-                        const option = document.createElement('option');
-                        option.value = window.id;
-                        option.textContent = window.display_name;
-                        select.appendChild(option);
-                    });
+                    
+                    if (data.windows && data.windows.length > 0) {
+                        data.windows.forEach(window => {
+                            const option = document.createElement('option');
+                            option.value = window.id;
+                            option.textContent = window.display_name;
+                            select.appendChild(option);
+                        });
+                        showAlert(`تم العثور على ${data.windows.length} شباك متاح`, 'success');
+                    } else {
+                        showAlert('لا توجد شبابيك متاحة لهذه الخدمة', 'warning');
+                    }
                 } else {
-                    showAlert('خطأ في جلب الشبابيك المتاحة', 'error');
+                    showAlert(data.message || 'خطأ في جلب الشبابيك المتاحة', 'error');
                 }
             })
             .catch(error => {
                 console.error('Error loading windows:', error);
-                showAlert('خطأ في جلب الشبابيك المتاحة', 'error');
+                showAlert('خطأ في جلب الشبابيك المتاحة: ' + error.message, 'error');
             });
         }
 

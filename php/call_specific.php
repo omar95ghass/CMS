@@ -23,8 +23,8 @@ try {
         exit();
     }
     
-    // البحث عن الدور
-    $stmt = $conn->prepare("SELECT id, number, clinic, status FROM queue WHERE user_id = ? AND number = ? AND date = ?");
+    // البحث عن الدور - فقط للشباك المحدد
+    $stmt = $conn->prepare("SELECT id, number, clinic, status FROM queue WHERE user_id = ? AND number = ? AND date = ? AND status = 'waiting'");
     $stmt->bind_param('iis', $userId, $number, $today);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -32,15 +32,19 @@ try {
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         
-        // تحديث حالة الدور
+        // تحديث حالة الدور - فقط للدور المحدد
         $updateStmt = $conn->prepare("UPDATE queue SET status = 'called' WHERE id = ?");
         $updateStmt->bind_param('i', $row['id']);
         
         if ($updateStmt->execute()) {
+            // تسجيل النداء في السجل
+            error_log("Queue called: Number {$row['number']} for clinic {$row['clinic']} by user $userId");
+            
             echo json_encode([
                 'status' => 'success', 
                 'number' => $row['number'],
-                'clinic' => $row['clinic']
+                'clinic' => $row['clinic'],
+                'queue_id' => $row['id']
             ]);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Failed to update status']);
@@ -48,7 +52,7 @@ try {
         
         $updateStmt->close();
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Number not found']);
+        echo json_encode(['status' => 'error', 'message' => 'Number not found or already called']);
     }
     
     $stmt->close();
