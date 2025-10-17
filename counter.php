@@ -441,6 +441,7 @@
     <script src="css/bootstrap/jQuery/jquery-3.6.0.min.js"></script>
     <script>
         let currentServingNumber = null;
+        let currentServingClinic = null;
         let serviceStartTime = null;
         let servingInterval = null;
         let queueData = [];
@@ -580,6 +581,7 @@
             .then(data => {
                 if (data.status === 'success') {
                     currentServingNumber = data.number;
+                    currentServingClinic = data.clinic;
                     document.getElementById('currentNumber').textContent = data.number;
                     showAlert(`تم نداء الدور رقم ${data.number}`, 'success');
                     updateQueue();
@@ -624,6 +626,7 @@
             .then(data => {
                 if (data.status === 'success') {
                     currentServingNumber = parseInt(number);
+                    currentServingClinic = clinic;
                     document.getElementById('currentNumber').textContent = number;
                     showAlert(`تم نداء الدور رقم ${number}`, 'success');
                     closeModal();
@@ -720,6 +723,7 @@
                 if (data.status === 'success') {
                     stopServiceTimer();
                     currentServingNumber = null;
+                    currentServingClinic = null;
                     document.getElementById('currentNumber').textContent = '--';
                     showAlert('تم إنهاء الخدمة بنجاح', 'success');
                     updateQueue();
