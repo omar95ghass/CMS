@@ -2,6 +2,10 @@
 session_start();
 header('Content-Type: application/json');
 
+// إيقاف عرض الأخطاء في الإخراج
+error_reporting(0);
+ini_set('display_errors', 0);
+
 try {
     include 'db.php';
     
@@ -36,6 +40,11 @@ try {
         JOIN queue_users u ON q.user_id = u.id 
         WHERE q.user_id = ? AND q.number = ? AND q.clinic = ? AND q.date = CURDATE() AND q.status = 'waiting'
     ");
+    
+    if (!$stmt) {
+        throw new Exception("خطأ في إعداد الاستعلام: " . $conn->error);
+    }
+    
     $stmt->bind_param('iis', $currentUserId, $number, $clinic);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -56,6 +65,11 @@ try {
         JOIN user_clinics uc ON u.id = uc.user_id 
         WHERE u.id = ? AND uc.clinic = ? AND u.role = 'counter'
     ");
+    
+    if (!$stmt) {
+        throw new Exception("خطأ في إعداد استعلام المستخدم الهدف: " . $conn->error);
+    }
+    
     $stmt->bind_param('is', $targetUserId, $queueData['clinic']);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -69,13 +83,20 @@ try {
     $stmt->close();
     
     // بدء المعاملة
-    $conn->begin_transaction();
+    if (!$conn->begin_transaction()) {
+        throw new Exception("فشل في بدء المعاملة: " . $conn->error);
+    }
     
     try {
         // 1. حذف الدور من الشباك الحالي
         $stmt = $conn->prepare("DELETE FROM queue WHERE id = ?");
+        if (!$stmt) {
+            throw new Exception("خطأ في إعداد استعلام الحذف: " . $conn->error);
+        }
         $stmt->bind_param('i', $queueId);
-        $stmt->execute();
+        if (!$stmt->execute()) {
+            throw new Exception("فشل في حذف الدور: " . $stmt->error);
+        }
         $stmt->close();
         
         // 2. إنشاء دور جديد في الشباك الهدف
@@ -83,8 +104,13 @@ try {
             INSERT INTO queue (user_id, clinic, number, status, date, created_at, transferred_from, transferred_to, transferred_at) 
             VALUES (?, ?, ?, 'waiting', CURDATE(), NOW(), ?, ?, NOW())
         ");
-        $stmt->bind_param('isiiii', $targetUserId, $queueData['clinic'], $queueData['number'], $currentUserId, $targetUserId);
-        $stmt->execute();
+        if (!$stmt) {
+            throw new Exception("خطأ في إعداد استعلام الإنشاء: " . $conn->error);
+        }
+        $stmt->bind_param('isiii', $targetUserId, $queueData['clinic'], $queueData['number'], $currentUserId, $targetUserId);
+        if (!$stmt->execute()) {
+            throw new Exception("فشل في إنشاء الدور الجديد: " . $stmt->error);
+        }
         $newQueueId = $conn->insert_id;
         $stmt->close();
         
@@ -93,11 +119,18 @@ try {
             INSERT INTO queue_transfers (original_queue_id, new_queue_id, from_user_id, to_user_id, clinic, number, transferred_at) 
             VALUES (?, ?, ?, ?, ?, ?, NOW())
         ");
-        $stmt->bind_param('iiiisi', $queueData['id'], $newQueueId, $currentUserId, $targetUserId, $queueData['clinic'], $queueData['number']);
-        $stmt->execute();
+        if (!$stmt) {
+            throw new Exception("خطأ في إعداد استعلام تسجيل التحويل: " . $conn->error);
+        }
+        $stmt->bind_param('iiiis', $queueData['id'], $newQueueId, $currentUserId, $targetUserId, $queueData['clinic'], $queueData['number']);
+        if (!$stmt->execute()) {
+            throw new Exception("فشل في تسجيل عملية التحويل: " . $stmt->error);
+        }
         $stmt->close();
         
-        $conn->commit();
+        if (!$conn->commit()) {
+            throw new Exception("فشل في تأكيد المعاملة: " . $conn->error);
+        }
         
         echo json_encode([
             'status' => 'success', 
@@ -107,12 +140,17 @@ try {
         ]);
         
     } catch (Exception $e) {
-        $conn->rollback();
+        if (!$conn->rollback()) {
+            error_log("فشل في إلغاء المعاملة: " . $conn->error);
+        }
         throw $e;
     }
     
 } catch (Exception $e) {
     error_log("Transfer queue error: " . $e->getMessage());
     echo json_encode(['status' => 'error', 'message' => 'حدث خطأ في التحويل: ' . $e->getMessage()]);
+} catch (Error $e) {
+    error_log("Transfer queue fatal error: " . $e->getMessage());
+    echo json_encode(['status' => 'error', 'message' => 'حدث خطأ فادح في التحويل: ' . $e->getMessage()]);
 }
 ?>
