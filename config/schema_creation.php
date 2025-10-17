@@ -55,6 +55,7 @@ $tables = [
     `password` varchar(255) NOT NULL,
     `role` enum('admin','counter','cashier') NOT NULL DEFAULT 'counter',
     `window_number` tinyint(3) unsigned DEFAULT NULL,
+    `status` enum('available','closed') NOT NULL DEFAULT 'available' COMMENT 'حالة الشباك',
     `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
     `assigned_screen` int(11) DEFAULT NULL COMMENT 'الشاشة/الشباك المربوطة بالمستخدم',
     PRIMARY KEY (`id`),
@@ -138,6 +139,19 @@ foreach ($tables as $sql) {
     // استخراج اسم الجدول من SQL للإخراج
     if (preg_match('/CREATE TABLE IF NOT EXISTS `([^`]+)`/', $sql, $m)) {
         // echo "✔ الجدول `{$m[1]}` جاهز\n";
+    }
+}
+
+// إضافة حقل status لجدول queue_users إذا لم يكن موجوداً
+$alterQuery = "ALTER TABLE `queue_users` ADD COLUMN `status` enum('available','closed') NOT NULL DEFAULT 'available' COMMENT 'حالة الشباك' AFTER `window_number`";
+if ($conn->query($alterQuery) === TRUE) {
+    echo "تم إضافة حقل status لجدول queue_users\n";
+} else {
+    // إذا فشل، قد يكون الحقل موجوداً بالفعل
+    if (strpos($conn->error, "Duplicate column name") !== false) {
+        echo "حقل status موجود بالفعل في جدول queue_users\n";
+    } else {
+        echo "خطأ في إضافة حقل status: " . $conn->error . "\n";
     }
 }
 
