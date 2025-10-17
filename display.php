@@ -279,6 +279,141 @@
         .pulse {
             animation: pulse 2s infinite;
         }
+        
+        /* شريط حالة الشبابيك */
+        .windows-status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            border-top: 3px solid #3498db;
+        }
+        
+        .status-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .status-bar-header h4 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        .status-legend {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .status-indicator.serving {
+            background: #f39c12;
+            box-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
+        }
+        
+        .status-indicator.available {
+            background: #27ae60;
+            box-shadow: 0 0 10px rgba(39, 174, 96, 0.5);
+        }
+        
+        .status-indicator.closed {
+            background: #e74c3c;
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+        }
+        
+        .windows-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .window-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .window-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .window-card.serving {
+            border-color: #f39c12;
+            background: rgba(243, 156, 18, 0.1);
+        }
+        
+        .window-card.available {
+            border-color: #27ae60;
+            background: rgba(39, 174, 96, 0.1);
+        }
+        
+        .window-card.closed {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+        
+        .window-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .window-status {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .window-clinic {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .toggle-status-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-status-btn:hover {
+            background: #2980b9;
+        }
+        
+        .toggle-status-btn.closed {
+            background: #e74c3c;
+        }
+        
+        .toggle-status-btn.closed:hover {
+            background: #c0392b;
+        }
     </style>
 </head>
 <body>
@@ -518,6 +653,92 @@
                 centerTitle.textContent = systemSettings.center_name;
             }
         }
+        
+        // إدارة شريط حالة الشبابيك
+        let windowsStatus = {};
+        
+        // جلب حالة الشبابيك
+        function fetchAndDisplayWindows() {
+            fetch('php/get_windows_status.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        windowsStatus = data.windows;
+                        displayWindowsStatus();
+                    }
+                })
+                .catch(error => console.error('Error fetching windows status:', error));
+        }
+        
+        // عرض حالة الشبابيك
+        function displayWindowsStatus() {
+            const windowsGrid = document.getElementById('windowsGrid');
+            const statusBar = document.getElementById('windowsStatusBar');
+            
+            if (!windowsGrid || !statusBar) return;
+            
+            if (Object.keys(windowsStatus).length === 0) {
+                statusBar.style.display = 'none';
+                return;
+            }
+            
+            statusBar.style.display = 'block';
+            
+            windowsGrid.innerHTML = Object.values(windowsStatus).map(window => {
+                const statusClass = window.status || 'available';
+                const statusText = getStatusText(window.status);
+                
+                return `
+                    <div class="window-card ${statusClass}">
+                        <div class="window-number">شباك ${window.window_number}</div>
+                        <div class="window-status">${statusText}</div>
+                        <div class="window-clinic">${window.clinic || 'غير محدد'}</div>
+                        <button class="toggle-status-btn ${window.status === 'closed' ? 'closed' : ''}" 
+                                onclick="toggleWindowStatus(${window.id})">
+                            ${window.status === 'closed' ? 'فتح الشباك' : 'إغلاق الشباك'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // الحصول على نص الحالة
+        function getStatusText(status) {
+            switch(status) {
+                case 'serving': return 'يقدم خدمة';
+                case 'closed': return 'مغلق';
+                default: return 'متاح';
+            }
+        }
+        
+        // تبديل حالة الشباك
+        function toggleWindowStatus(windowId) {
+            const newStatus = windowsStatus[windowId].status === 'closed' ? 'available' : 'closed';
+            
+            fetch('php/toggle_window_status.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    window_id: windowId,
+                    status: newStatus 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    windowsStatus[windowId].status = newStatus;
+                    displayWindowsStatus();
+                } else {
+                    alert('فشل في تحديث حالة الشباك: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error toggling window status:', error);
+                alert('حدث خطأ في تحديث حالة الشباك');
+            });
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             const startButton = document.getElementById('startButton');
@@ -545,5 +766,29 @@
             startButton.addEventListener('click', startApp);
         });
     </script>
+    
+    <!-- شريط حالة الشبابيك -->
+    <div id="windowsStatusBar" class="windows-status-bar" style="display: none;">
+        <div class="status-bar-header">
+            <h4>حالة الشبابيك</h4>
+            <div class="status-legend">
+                <span class="legend-item">
+                    <span class="status-indicator serving"></span>
+                    يقدم خدمة
+                </span>
+                <span class="legend-item">
+                    <span class="status-indicator available"></span>
+                    متاح
+                </span>
+                <span class="legend-item">
+                    <span class="status-indicator closed"></span>
+                    مغلق
+                </span>
+            </div>
+        </div>
+        <div class="windows-grid" id="windowsGrid">
+            <!-- الشبابيك ستظهر هنا -->
+        </div>
+    </div>
 </body>
 </html>

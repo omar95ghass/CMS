@@ -674,7 +674,29 @@
         // إعادة النداء
         document.getElementById('recallBtn').addEventListener('click', function() {
             if (currentServingNumber) {
-                showAlert(`إعادة نداء الدور رقم ${currentServingNumber}`, 'success');
+                // إرسال طلب إعادة النداء إلى الخادم
+                fetch('php/recall_queue.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        number: currentServingNumber,
+                        clinic: currentServingClinic 
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showAlert(`تم إعادة نداء الدور رقم ${currentServingNumber}`, 'success');
+                    } else {
+                        showAlert('فشل في إعادة النداء: ' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error recalling queue:', error);
+                    showAlert('حدث خطأ في إعادة النداء', 'error');
+                });
             } else {
                 showAlert('لا يوجد دور قيد الخدمة', 'warning');
             }
