@@ -620,11 +620,7 @@
         // إنهاء الخدمة
         document.getElementById('completeService').addEventListener('click', function() {
             if (currentServingNumber) {
-                // هنا يمكن إضافة منطق إنهاء الخدمة
-                stopServiceTimer();
-                currentServingNumber = null;
-                document.getElementById('currentNumber').textContent = '--';
-                showAlert('تم إنهاء الخدمة', 'success');
+                completeService(currentServingNumber);
             } else {
                 showAlert('لا يوجد دور قيد الخدمة', 'warning');
             }
@@ -638,6 +634,37 @@
                 showAlert('لا يوجد دور قيد الخدمة', 'warning');
             }
         });
+
+        // دالة إنهاء الخدمة
+        function completeService(number) {
+            fetch('php/update_status.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    number: number, 
+                    status: 'completed',
+                    date: new Date().toISOString().split('T')[0]
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    stopServiceTimer();
+                    currentServingNumber = null;
+                    document.getElementById('currentNumber').textContent = '--';
+                    showAlert('تم إنهاء الخدمة بنجاح', 'success');
+                    updateQueue();
+                } else {
+                    showAlert('فشل في إنهاء الخدمة: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error completing service:', error);
+                showAlert('خطأ في إنهاء الخدمة', 'error');
+            });
+        }
 
         // تسجيل الخروج
         document.getElementById('logoutBtn').addEventListener('click', function() {

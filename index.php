@@ -1,187 +1,250 @@
-<?php
-session_start();
-$page_title = "الخدمات الفعالة";
-$breadcrumbs = [
-    ['title' => 'الرئيسية', 'url' => 'index.php']
-];
-include 'includes/header.php';
-?>
-
-<style>
-    .service-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-        margin: 20px 0;
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>الخدمات الفعالة</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="images/logo/logo.ico">
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: "Cairo", Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-    
+    header {
+      background: linear-gradient(135deg, #1f3c88 0%, #2c5aa0 100%);
+      color: white;
+      text-align: center;
+      padding: 30px 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    header img {
+      max-width: 80px;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    header h1 {
+      font-size: 28px;
+      margin: 0;
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    header h4 {
+      font-size: 18px;
+      font-weight: 400;
+      margin-top: 8px;
+      opacity: 0.9;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 15px;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 25px;
+      width: 100%;
+      max-width: 1000px;
+    }
     .service-card {
-        background: white;
-        border: 2px solid #667eea;
-        border-radius: 15px;
-        padding: 30px 20px;
-        text-align: center;
-        font-size: 20px;
-        font-weight: bold;
-        color: #667eea;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      background: white;
+      border: 3px solid #1f3c88;
+      border-radius: 15px;
+      padding: 35px 25px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      color: #1f3c88;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      position: relative;
+      overflow: hidden;
     }
-    
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    .service-card:hover::before {
+      left: 100%;
+    }
     .service-card:hover {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        transform: translateY(-5px);
-        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      background: linear-gradient(135deg, #1f3c88 0%, #2c5aa0 100%);
+      color: white;
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(31, 60, 136, 0.3);
+      border-color: #fff;
     }
-    
+
+    footer {
+      position: relative;
+      background: #fff;
+      border-top: 1px solid #ddd;
+      text-align: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      padding: 15px;
+    }
+    .footer-links a {
+      font-size: 16px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      min-width: 160px;
+      text-decoration: none;
+      color: #1f3c88;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .footer-links a:hover {
+      background: #1f3c88;
+      color: white;
+      transform: translateY(-2px);
+    }
+
     .ticker {
         width: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #1f3c88 0%, #2c5aa0 100%);
         color: #fff;
         overflow: hidden;
         position: relative;
-        height: 50px;
+        height: 45px;
         display: flex;
         align-items: center;
-        border-radius: 10px;
-        margin: 20px 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    
+
     .ticker-content {
         display: inline-block;
         white-space: nowrap;
         animation: ticker 30s linear infinite;
     }
-    
+
     .ticker-content span {
         display: inline-block;
         margin-left: 100px;
         font-size: 16px;
         font-weight: 500;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
-    
+
     @keyframes ticker {
         0%   { transform: translateX(-100%); }
         100% { transform: translateX(100%); }
     }
-    
-    .welcome-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 40px;
-        border-radius: 15px;
-        text-align: center;
-        margin-bottom: 30px;
-    }
-    
-    .welcome-section h1 {
-        font-size: 2.5rem;
-        margin-bottom: 10px;
-    }
-    
-    .welcome-section p {
-        font-size: 1.2rem;
-        opacity: 0.9;
-    }
-    
-    .stats-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-        margin: 30px 0;
-    }
-    
-    .stat-card {
-        background: white;
-        padding: 25px;
-        border-radius: 15px;
-        text-align: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease;
-    }
-    
-    .stat-card:hover {
-        transform: translateY(-5px);
-    }
-    
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: #667eea;
-        margin-bottom: 10px;
-    }
-    
-    .stat-label {
-        color: #666;
-        font-size: 1.1rem;
-    }
-</style>
 
-<div class="welcome-section">
-    <h1>مرحباً بكم في مركز خدمة المواطن</h1>
-    <p>النافذة الواحدة - المس الخدمة لقطع الدور</p>
-</div>
+    /* رسائل التنبيه المحسنة */
+    .alert-box {
+      position: fixed;
+      top: 20px;
+      right: 50%;
+      transform: translateX(50%);
+      min-width: 300px;
+      padding: 20px 25px;
+      border-radius: 12px;
+      text-align: center;
+      z-index: 1000;
+      display: none;
+      font-size: 16px;
+      font-weight: 500;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      animation: slideDown 0.3s ease-out;
+    }
+    
+    @keyframes slideDown {
+      from { transform: translateX(50%) translateY(-20px); opacity: 0; }
+      to { transform: translateX(50%) translateY(0); opacity: 1; }
+    }
+    
+    .alert-success { 
+      background: linear-gradient(135deg, #28a745 0%, #20bf6b 100%); 
+      color: #fff; 
+    }
+    .alert-warning { 
+      background: linear-gradient(135deg, #ffc107 0%, #f39c12 100%); 
+      color: #000; 
+    }
+    .alert-error   { 
+      background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%); 
+      color: #fff; 
+    }
+    
+    /* تحسينات الاستجابة */
+    @media (max-width: 768px) {
+      .card-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+      }
+      .service-card {
+        padding: 25px 15px;
+        font-size: 18px;
+      }
+      header h1 {
+        font-size: 24px;
+      }
+      header h4 {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- الهيدر المحسن -->
+  <header>
+    <img src="images/logo/logo.png" alt="Logo">
+    <h1>مركز خدمة المواطن - النافذة الواحدة</h1>
+    <h4>المس الخدمة لقطع الدور</h4>
+  </header>
 
-<div class="stats-cards">
-    <div class="stat-card">
-        <div class="stat-number" id="totalServices">0</div>
-        <div class="stat-label">الخدمات المتاحة</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-number" id="activeQueues">0</div>
-        <div class="stat-label">الأدوار النشطة</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-number" id="completedToday">0</div>
-        <div class="stat-label">مكتملة اليوم</div>
-    </div>
-</div>
+  <!-- المحتوى الرئيسي -->
+  <main>
+    <div id="clinicGrid" class="card-grid"></div>
+  </main>
 
-<div class="card">
-    <div class="card-header">
-        <h4 class="mb-0">اختر الخدمة المطلوبة</h4>
-    </div>
-    <div class="card-body">
-        <div id="clinicGrid" class="service-grid"></div>
-    </div>
-</div>
-
-<div class="ticker">
+  <!-- الفوتر المحسن -->
+  <footer>
+    <div class="ticker">
     <div class="ticker-content">
-        <span>✅ مركز خدمة المواطن - النافذة الواحدة</span>
+        <span>✅ مركز خدمة المواطن في دمر</span>
         <span>⚠️ يرجى الاحتفاظ بتذكرة الدور</span>
         <span>📢 لا تخرج من الصالة لتتمكن من سماع النداء</span>
-        <span>🕐 أوقات العمل: من 8:00 صباحاً إلى 4:00 مساءً</span>
         <span>💡 نتمنى لكم يوماً طيباً</span>
     </div>
-</div>
+    </div>
+  </footer>
 
-<?php include 'includes/footer.php'; ?>
+  <!-- صندوق التنبيه المحسن -->
+  <div id="alertBox" class="alert-box"></div>
 
-<script>
+  <script>
     // تحديث الإحصائيات
     function updateStats() {
         fetch('php/get_active_clinics.php')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    document.getElementById('totalServices').textContent = data.clinics.length;
+                    console.log('Services loaded:', data.clinics.length);
                 }
             })
             .catch(error => console.error('Error fetching stats:', error));
-            
-        // جلب إحصائيات الأدوار
-        fetch('php/statics.php')
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    document.getElementById('activeQueues').textContent = data.active_queues || 0;
-                    document.getElementById('completedToday').textContent = data.completed_today || 0;
-                }
-            })
-            .catch(error => console.error('Error fetching queue stats:', error));
     }
     
     // تحديث الإحصائيات كل 30 ثانية
