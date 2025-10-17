@@ -1,0 +1,247 @@
+/* ألوان رئيسية */
+:root {
+    --dark-blue: #003366;
+    --medium-blue: #0056a2;
+    --light-blue: #007bff;
+    --orange: #ff7f00;
+    --white: #ffffff;
+    --grey-text: #ccc;
+    --light-grey-bg: #f5f5f5;
+    --green-tag: #28a745;
+    --yellow-tag: #ffc107;
+    --blue-tag: #17a2b8;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #000; /* خلفية سوداء لمحاكاة البيئة */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    direction: ltr; /* لضبط الترتيب العام للأعمدة */
+}
+
+/* محاكاة الإطار اللوحي */
+.tablet-frame {
+    width: 900px; /* يمكن تعديل العرض حسب الحاجة */
+    height: 600px; /* يمكن تعديل الارتفاع حسب الحاجة */
+    background-color: var(--white);
+    border-radius: 15px;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--white);
+}
+
+/* شريط علوي (Top Bar) - لاحظ أنه في الجانب الأيمن من الواجهة */
+.top-bar {
+    background-color: var(--medium-blue);
+    color: var(--white);
+    padding: 5px 15px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+}
+.notifications {
+    font-weight: bold;
+}
+.notifications .icon {
+    margin-right: 5px;
+}
+
+/* التخطيط الرئيسي للأعمدة */
+.main-content {
+    display: flex;
+    flex: 1;
+}
+
+.column {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}
+
+/* 1. العمود الأيسر (رقم التذكرة) */
+.left-panel {
+    flex: 2; /* يأخذ مساحة أكبر */
+    background-color: var(--white);
+    text-align: center;
+    padding: 30px 15px 15px 15px;
+}
+
+.info-card {
+    padding: 20px;
+}
+
+.label, .label-sm {
+    color: var(--dark-blue);
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+
+.label-lg {
+    color: var(--orange);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.token-number {
+    font-size: 8rem;
+    font-weight: 700;
+    color: var(--orange);
+    border: 5px solid var(--orange);
+    border-radius: 10px;
+    padding: 10px 0;
+    margin: 20px auto;
+    width: 70%;
+}
+
+.serving-time {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--dark-blue);
+    margin-bottom: 40px;
+}
+
+.performance-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--dark-blue);
+    border-top: 1px solid var(--grey-text);
+    padding-top: 15px;
+    margin-top: auto;
+}
+.excellent {
+    font-weight: bold;
+    color: var(--green-tag);
+}
+
+/* 2. العمود الأوسط (الأزرار) */
+.center-panel {
+    flex: 1;
+    background-color: var(--dark-blue);
+    gap: 10px; /* مسافة بين الأزرار */
+    padding: 15px 20px;
+}
+
+.action-btn {
+    background-color: var(--medium-blue);
+    color: var(--white);
+    border: none;
+    padding: 15px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+    transition: background-color 0.3s;
+}
+
+.action-btn:hover {
+    background-color: var(--light-blue);
+}
+
+/* 3. العمود الأيمن (قائمة الزوار) */
+.right-panel {
+    flex: 1.2;
+    background-color: var(--light-grey-bg);
+    padding: 0; /* إزالة البادنج الرئيسي للعمود */
+}
+
+.department-header {
+    background-color: var(--dark-blue);
+    color: var(--white);
+    padding: 10px 15px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.visitor-list-container {
+    overflow-y: auto; /* لإضافة شريط تمرير إذا كانت القائمة طويلة */
+    flex: 1;
+}
+
+.visitor-item {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+    background-color: var(--white);
+    transition: background-color 0.3s;
+}
+
+.visitor-item:hover {
+    background-color: #f0f0f0;
+}
+
+.visitor-name {
+    font-weight: bold;
+    color: var(--dark-blue);
+    flex-basis: 70%;
+}
+
+.visitor-detail {
+    flex-basis: 100%;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+.wait-time {
+    font-size: 0.8rem;
+    color: #999;
+    align-self: flex-start;
+}
+
+/* تنسيق العلامات/الأوسمة */
+.tag-container {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+.tag {
+    padding: 2px 5px;
+    border-radius: 3px;
+    color: var(--white);
+    font-size: 0.7rem;
+}
+
+.tag-green { background-color: var(--green-tag); }
+.tag-yellow { background-color: var(--yellow-tag); color: #333;}
+.tag-blue { background-color: var(--blue-tag); }
+
+/* زر إضافة زائر في الأسفل */
+.add-visitor-btn {
+    background-color: var(--orange);
+    color: var(--white);
+    border: none;
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: auto; /* يثبت الزر في الأسفل */
+    width: 100%;
+    transition: background-color 0.3s;
+}
+
+.add-visitor-btn:hover {
+    background-color: #e66900;
+}

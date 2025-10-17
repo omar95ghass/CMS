@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة الطوابير</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+        body { font-family: 'Cairo', sans-serif; }
+    </style>
+</head>
+<body>
+    <div class="tablet-frame">
+        <div class="app-container">
+
+            <div class="top-bar">
+                <span class="user-info">Paul Smaith | Sat, 27 Sep 2018 | 11:25 AM</span>
+                <span class="notifications">
+                    <span class="icon">🔔</span> 4 visitors are waiting
+                </span>
+            </div>
+
+            <div class="main-content">
+
+                <div class="column left-panel">
+                    <div class="info-card serving-status">
+                        <p class="label">Current Serving</p>
+                        <h2 class="label-lg">Token Number</h2>
+                        <div class="token-number">207</div>
+                        <p class="label-sm">Serving Time</p>
+                        <div class="serving-time">00:45:13</div>
+                    </div>
+                    <div class="performance-footer">
+                        <span class="stat">Total Served Tokens: 10</span>
+                        <span class="stat">Performance Status: <span class="excellent">Excellent</span></span>
+                    </div>
+                </div>
+
+                <div class="column center-panel">
+                    <button class="action-btn next">Next</button>
+                    <button class="action-btn call">Call</button>
+                    <button class="action-btn recall">Recall</button>
+                    <button class="action-btn transfer">Transfer</button>
+                    <button class="action-btn start">Start</button>
+                    <button class="action-btn close">Close</button>
+                </div>
+
+                <div class="column right-panel">
+                    <div class="department-header">Department</div>
+                    
+                    <div class="visitor-list-container">
+                        <div class="visitor-item">
+                            <p class="visitor-name">Zhou Zong</p>
+                            <p class="visitor-detail">
+                                <span class="detail-number">0876543218</span>
+                            </p>
+                            <span class="wait-time">45 min</span>
+                        </div>
+                        <div class="visitor-item">
+                            <p class="visitor-name">Zhou Zong</p>
+                            <p class="visitor-detail">
+                                <span class="detail-number">0876543218</span>
+                            </p>
+                            <span class="wait-time">40 min</span>
+                        </div>
+                         <div class="visitor-item">
+                            <p class="visitor-name">Zhou Zong</p>
+                            <p class="visitor-detail">
+                                <span class="detail-number">0876543218</span>
+                            </p>
+                            <span class="wait-time">30 min</span>
+                        </div>
+                        <div class="visitor-item">
+                            <p class="visitor-name">Zhou Zong</p>
+                            <p class="visitor-detail">
+                                <span class="detail-number">0876543218</span>
+                                <div class="tag-container">
+                                    <span class="tag tag-green">Urgent 1</span>
+                                    <span class="tag tag-yellow">Case A</span>
+                                    <span class="tag tag-blue">Table 4</span>
+                                </div>
+                            </p>
+                            <span class="wait-time">25 min</span>
+                        </div>
+                    </div>
+                    
+                    <button class="add-visitor-btn">Add Visitor</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
