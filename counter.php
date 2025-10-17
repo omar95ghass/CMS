@@ -467,21 +467,29 @@
                 const statusText = {
                     'waiting': 'في الانتظار',
                     'called': 'مدعو',
-                    'completed': 'مكتمل'
+                    'completed': 'مكتمل',
+                    'announced': 'تم الإعلان'
                 };
 
                 const statusClass = {
                     'waiting': 'status-waiting',
                     'called': 'status-called',
-                    'completed': 'status-completed'
+                    'completed': 'status-completed',
+                    'announced': 'status-announced'
                 };
+
+                // إضافة كلاس للحالة المكتملة
+                if (item.status === 'completed') {
+                    div.style.opacity = '0.6';
+                    div.style.textDecoration = 'line-through';
+                }
 
                 div.innerHTML = `
                     <p class="visitor-name">رقم ${item.number}</p>
                     <p class="visitor-detail">
                         <span class="detail-number">${item.clinic}</span>
                         <div class="tag-container">
-                            <span class="status-badge ${statusClass[item.status]}">${statusText[item.status]}</span>
+                            <span class="status-badge ${statusClass[item.status] || 'status-waiting'}">${statusText[item.status] || item.status}</span>
                         </div>
                     </p>
                     <span class="wait-time">${formatTime(item.created_at)}</span>

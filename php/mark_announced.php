@@ -1,19 +1,32 @@
 <?php
+session_start();
 header('Content-Type: application/json');
-require 'db.php';
 
-$id = intval($_POST['id'] ?? 0);
-if (!$id) {
-    echo json_encode(['status'=>'error','message'=>'Invalid id']);
-    exit;
+try {
+    include 'db.php';
+    
+    $id = $_POST['id'] ?? 0;
+    
+    if ($id <= 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid ID']);
+        exit();
+    }
+    
+    // تحديث حالة الدور إلى announced
+    $stmt = $conn->prepare("UPDATE queue SET status = 'announced' WHERE id = ?");
+    $stmt->bind_param('i', $id);
+    
+    if ($stmt->execute()) {
+        echo json_encode(['status' => 'success', 'message' => 'Status updated to announced']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Failed to update status']);
+    }
+    
+    $stmt->close();
+    $conn->close();
+    
+} catch (Exception $e) {
+    error_log("Mark announced error: " . $e->getMessage());
+    echo json_encode(['status' => 'error', 'message' => 'Database error occurred']);
 }
-
-$stmt = $conn->prepare("UPDATE queue SET status='announced' WHERE id=?");
-$stmt->bind_param('i', $id);
-if ($stmt->execute()) {
-    echo json_encode(['status'=>'success']);
-} else {
-    echo json_encode(['status'=>'error','message'=>$stmt->error]);
-}
-$stmt->close();
-$conn->close();
+?>

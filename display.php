@@ -379,13 +379,21 @@
                 .then(r => r.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        // تصفية النداءات الجديدة فقط
-                        const newCalls = data.calls.filter(call => !lastProcessedIds.has(call.id));
+                        // تصفية النداءات الجديدة فقط التي لم يتم معالجتها
+                        const newCalls = data.calls.filter(call => 
+                            !lastProcessedIds.has(call.id) && 
+                            (call.status === 'called' || call.status === 'announced')
+                        );
+                        
                         newCalls.forEach(call => {
                             playbackQueue.push(call);
                             lastProcessedIds.add(call.id);
                         });
-                        playFromQueue();
+                        
+                        // تشغيل النداءات فقط إذا لم يكن هناك نداء قيد التشغيل
+                        if (!isPlaying) {
+                            playFromQueue();
+                        }
                     }
                 })
                 .catch(console.error);
@@ -478,6 +486,39 @@
                 .catch(err => console.error('Error pushing to screens:', err));
         }
 
+        let systemSettings = {};
+        
+        // جلب إعدادات النظام
+        function loadSettings() {
+            fetch('php/get_settings.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        systemSettings = data.settings;
+                        updateTickerMessages();
+                        updateCenterName();
+                    }
+                })
+                .catch(error => console.error('Error loading settings:', error));
+        }
+        
+        // تحديث رسائل الشريط المتحرك
+        function updateTickerMessages() {
+            const tickerContent = document.querySelector('.ticker-content');
+            if (tickerContent && systemSettings.ticker_messages) {
+                const messages = systemSettings.ticker_messages.split('\n').filter(msg => msg.trim());
+                tickerContent.innerHTML = messages.map(msg => `<span>${msg.trim()}</span>`).join('');
+            }
+        }
+        
+        // تحديث اسم المركز
+        function updateCenterName() {
+            const centerTitle = document.querySelector('.header-section h1');
+            if (centerTitle && systemSettings.center_name) {
+                centerTitle.textContent = systemSettings.center_name;
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const startButton = document.getElementById('startButton');
             const welcomeScreen = document.getElementById('welcomeScreen');
@@ -485,6 +526,9 @@
             function startApp() {
                 isAppStarted = true;
                 welcomeScreen.style.display = 'none';
+                
+                // تحميل الإعدادات
+                loadSettings();
                 
                 // بدء التحديثات
                 fetchPendingCalls();
@@ -495,6 +539,7 @@
                 setInterval(fetchPendingCalls, 5000); // كل 5 ثوان
                 setInterval(fetchAndDisplayWindows, 10000); // كل 10 ثوان
                 setInterval(pushToScreens, 30000); // كل 30 ثانية
+                setInterval(loadSettings, 60000); // تحديث الإعدادات كل دقيقة
             }
 
             startButton.addEventListener('click', startApp);

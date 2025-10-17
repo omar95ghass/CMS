@@ -235,6 +235,39 @@
   <div id="alertBox" class="alert-box"></div>
 
   <script>
+    let systemSettings = {};
+    
+    // جلب إعدادات النظام
+    function loadSettings() {
+        fetch('php/get_settings.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    systemSettings = data.settings;
+                    updateTickerMessages();
+                    updateCenterName();
+                }
+            })
+            .catch(error => console.error('Error loading settings:', error));
+    }
+    
+    // تحديث رسائل الشريط المتحرك
+    function updateTickerMessages() {
+        const tickerContent = document.querySelector('.ticker-content');
+        if (tickerContent && systemSettings.ticker_messages) {
+            const messages = systemSettings.ticker_messages.split('\n').filter(msg => msg.trim());
+            tickerContent.innerHTML = messages.map(msg => `<span>${msg.trim()}</span>`).join('');
+        }
+    }
+    
+    // تحديث اسم المركز
+    function updateCenterName() {
+        const centerTitle = document.querySelector('header h1');
+        if (centerTitle && systemSettings.center_name) {
+            centerTitle.textContent = systemSettings.center_name;
+        }
+    }
+    
     // تحديث الإحصائيات
     function updateStats() {
         fetch('php/get_active_clinics.php')
@@ -247,9 +280,14 @@
             .catch(error => console.error('Error fetching stats:', error));
     }
     
-    // تحديث الإحصائيات كل 30 ثانية
-    setInterval(updateStats, 30000);
-    updateStats();
+    // تحميل الإعدادات عند بدء التحميل
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSettings();
+        updateStats();
+        
+        // تحديث الإحصائيات كل 30 ثانية
+        setInterval(updateStats, 30000);
+    });
 
     async function generateQueueTicketImage(clinic, queueNumber) {
         const widthMm = 80;

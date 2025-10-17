@@ -49,8 +49,22 @@ try {
         throw new Exception("Failed to save image to temporary file.");
     }
 
-    // 2. الطباعة
-    $conn = new WindowsPrintConnector('MP-80'); // تأكد من اسم الطابعة
+    // 2. جلب إعدادات الطابعة
+    $printerName = 'MP-80'; // الافتراضي
+    try {
+        $settingsStmt = $conn->prepare("SELECT setting_value FROM system_settings WHERE setting_key = 'printer_name'");
+        $settingsStmt->execute();
+        $result = $settingsStmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            $printerName = $row['setting_value'];
+        }
+        $settingsStmt->close();
+    } catch (Exception $e) {
+        error_log("Error fetching printer settings: " . $e->getMessage());
+    }
+    
+    // 3. الطباعة
+    $conn = new WindowsPrintConnector($printerName);
     $printer = new Printer($conn);
     
     // تحميل الصورة (يتطلب تفعيل مكتبة GD في php.ini)
