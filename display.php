@@ -546,7 +546,7 @@
             });
         }
 
-        function fetchAndDisplayWindows() {
+        function fetchAnnouncedNumbers() {
             fetch('php/get_current_number.php')
                 .then(r => r.json())
                 .then(data => {
@@ -753,11 +753,13 @@
                 
                 // بدء التحديثات
                 fetchPendingCalls();
+                fetchAnnouncedNumbers();
                 fetchAndDisplayWindows();
                 pushToScreens();
                 
                 // إعداد التحديثات الدورية
                 setInterval(fetchPendingCalls, 5000); // كل 5 ثوان
+                setInterval(fetchAnnouncedNumbers, 10000); // كل 10 ثوان
                 setInterval(fetchAndDisplayWindows, 10000); // كل 10 ثوان
                 setInterval(pushToScreens, 30000); // كل 30 ثانية
                 setInterval(loadSettings, 60000); // تحديث الإعدادات كل دقيقة
