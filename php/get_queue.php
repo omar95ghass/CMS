@@ -72,8 +72,8 @@ function calculateWaitingTime($createdAt) {
 function getStatusText($status) {
     $statuses = [
         'waiting' => 'في الانتظار',
-        'called' => 'مدعو',
-        'announced' => 'تم الإعلان',
+        'called' => 'تم الطلب',
+        'announced' => 'تم النداء',
         'completed' => 'مكتمل'
     ];
     

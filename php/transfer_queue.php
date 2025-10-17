@@ -122,7 +122,7 @@ try {
         if (!$stmt) {
             throw new Exception("خطأ في إعداد استعلام تسجيل التحويل: " . $conn->error);
         }
-        $stmt->bind_param('iiiis', $queueData['id'], $newQueueId, $currentUserId, $targetUserId, $queueData['clinic'], $queueData['number']);
+        $stmt->bind_param('iiiisi', $queueData['id'], $newQueueId, $currentUserId, $targetUserId, $queueData['clinic'], $queueData['number']);
         if (!$stmt->execute()) {
             throw new Exception("فشل في تسجيل عملية التحويل: " . $stmt->error);
         }

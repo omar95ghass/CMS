@@ -7,7 +7,8 @@ $result = $conn->query("
     SELECT
         q.clinic,
         q.number,
-        qu.window_number
+        qu.window_number,
+        q.status
     FROM queue q
     LEFT JOIN queue_users qu ON qu.id = q.user_id
     WHERE q.status = 'called' OR q.status = 'announced'

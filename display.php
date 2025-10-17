@@ -451,6 +451,7 @@
             const statusClass = item.status === 'called' ? 'status-active' : 
                               item.status === 'waiting' ? 'status-waiting' : 'status-inactive';
             
+            console.log(item);
             card.innerHTML = `
                 <div class="window-number">
                     شباك ${item.window_number}
