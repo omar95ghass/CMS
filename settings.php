@@ -14,11 +14,11 @@ if ($_SESSION['role'] !== 'admin') {
 }
 
 $page_title = "إعدادات النظام";
-$breadcrumbs = [
-    ['title' => 'الرئيسية', 'url' => 'index.php'],
-    ['title' => 'الإعدادات', 'url' => 'settings.php']
+$page_subtitle = "إدارة إعدادات النظام والخدمات";
+$breadcrumb = [
+    ['title' => 'الإعدادات', 'url' => 'settings.php', 'active' => true]
 ];
-include 'includes/header.php';
+include 'includes/admin_header.php';
 
 // معالجة حفظ الإعدادات
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -291,4 +291,4 @@ try {
     });
 </script>
 
-<?php include 'includes/footer.php'; ?>
+<?php include 'includes/admin_footer.php'; ?>

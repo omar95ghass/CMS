@@ -8,6 +8,18 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// التحقق من صلاحيات الإدارة
+if ($_SESSION['role'] !== 'admin') {
+    header("Location: error.php?error=permission&message=" . urlencode("ليس لديك صلاحية للوصول إلى هذه الصفحة"));
+    exit();
+}
+
+$page_title = "الإحصائيات";
+$page_subtitle = "إحصائيات مفصلة لنظام طوابير الخدمة";
+$breadcrumb = [
+    ['title' => 'الإحصائيات', 'url' => 'statistics.php', 'active' => true]
+];
+
 // جلب الإحصائيات
 try {
     $today = date('Y-m-d');
@@ -77,16 +89,7 @@ try {
 }
 ?>
 
-<!DOCTYPE html>
-<html dir="rtl" lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الإحصائيات - نظام إدارة الطوابير</title>
-    <link href="css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="images/logo/logo.ico">
-    <link rel="stylesheet" href="css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<?php include 'includes/admin_header.php'; ?>
     <style>
         .stats-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -284,5 +287,4 @@ try {
             }
         });
     </script>
-</body>
-</html>
+<?php include 'includes/admin_footer.php'; ?>
