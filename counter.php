@@ -441,6 +441,7 @@
     <script src="css/bootstrap/jQuery/jquery-3.6.0.min.js"></script>
     <script>
         let currentServingNumber = null;
+        let currentServingClinic = null;
         let serviceStartTime = null;
         let servingInterval = null;
         let queueData = [];
@@ -580,6 +581,7 @@
             .then(data => {
                 if (data.status === 'success') {
                     currentServingNumber = data.number;
+                    currentServingClinic = data.clinic;
                     document.getElementById('currentNumber').textContent = data.number;
                     showAlert(`تم نداء الدور رقم ${data.number}`, 'success');
                     updateQueue();
@@ -624,6 +626,7 @@
             .then(data => {
                 if (data.status === 'success') {
                     currentServingNumber = parseInt(number);
+                    currentServingClinic = clinic;
                     document.getElementById('currentNumber').textContent = number;
                     showAlert(`تم نداء الدور رقم ${number}`, 'success');
                     closeModal();
@@ -674,7 +677,29 @@
         // إعادة النداء
         document.getElementById('recallBtn').addEventListener('click', function() {
             if (currentServingNumber) {
-                showAlert(`إعادة نداء الدور رقم ${currentServingNumber}`, 'success');
+                // إرسال طلب إعادة النداء إلى الخادم
+                fetch('php/recall_queue.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        number: currentServingNumber,
+                        clinic: currentServingClinic 
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showAlert(`تم إعادة نداء الدور رقم ${currentServingNumber}`, 'success');
+                    } else {
+                        showAlert('فشل في إعادة النداء: ' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error recalling queue:', error);
+                    showAlert('حدث خطأ في إعادة النداء', 'error');
+                });
             } else {
                 showAlert('لا يوجد دور قيد الخدمة', 'warning');
             }
@@ -698,6 +723,7 @@
                 if (data.status === 'success') {
                     stopServiceTimer();
                     currentServingNumber = null;
+                    currentServingClinic = null;
                     document.getElementById('currentNumber').textContent = '--';
                     showAlert('تم إنهاء الخدمة بنجاح', 'success');
                     updateQueue();

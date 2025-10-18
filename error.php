@@ -1,12 +1,20 @@
-<!DOCTYPE html>
-<html dir="rtl" lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>خطأ في النظام</title>
-    <link href="css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="images/logo/logo.ico">
-    <link rel="stylesheet" href="css/style.css">
+<?php
+session_start();
+
+$page_title = "سجل الأخطاء";
+$page_subtitle = "عرض وإدارة أخطاء النظام";
+$breadcrumb = [
+    ['title' => 'سجل الأخطاء', 'url' => 'error.php', 'active' => true]
+];
+
+// التحقق من الصلاحيات
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    $page_title = "خطأ في النظام";
+    $page_subtitle = "حدث خطأ في النظام";
+}
+
+include 'includes/admin_header.php';
+?>
     <style>
         .error-container {
             min-height: 100vh;
@@ -145,5 +153,4 @@
         // تشغيل تقرير الخطأ عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', reportError);
     </script>
-</body>
-</html>
+<?php include 'includes/admin_footer.php'; ?>
