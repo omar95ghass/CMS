@@ -6,6 +6,7 @@ $(document).ready(function() {
 
   function loadUsers() {
     $.get('php/get_users.php', data => {
+      console.log(data); 
       if (data.status === 'success') {
         table.empty();
         data.users.forEach(u => {
@@ -15,7 +16,7 @@ $(document).ready(function() {
             <td>${u.username}</td>
             <td>${u.role}</td>
             <td>${u.window_number || ''}</td>
-            <td>${u.created_at}</td>
+            <td hidden>${u.created_at}</td>
             <td>
                 <button class="btn btn-sm btn-warning edit-btn" data-id="${u.id}">تعديل</button>
                 <button class="btn btn-sm btn-danger delete-btn" data-id="${u.id}">حذف</button>

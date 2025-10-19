@@ -599,6 +599,7 @@ try {
 
         // عرض البيانات في الجدول
         Object.values(userServicesMap).forEach(userData => {
+            console.log(userData);
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${userData.user.username}</td>

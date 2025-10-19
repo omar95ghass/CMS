@@ -52,8 +52,8 @@
 
         /* محاكاة الإطار اللوحي */
         .tablet-frame {
-            width: 900px;
-            height: 600px;
+            width: 1200px;
+            height: 80%;
             background-color: var(--white);
             border-radius: 15px;
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
@@ -102,6 +102,7 @@
             background-color: var(--white);
             text-align: center;
             padding: 30px 15px 15px 15px;
+            min-height: 685px !important;
         }
 
         .info-card {
@@ -159,6 +160,7 @@
             background-color: var(--dark-blue);
             gap: 10px;
             padding: 15px 20px;
+            min-height: 685px !important;
         }
 
         .action-btn {
@@ -383,6 +385,7 @@
                     </div>
                     <div class="performance-footer">
                         <span class="stat">إجمالي الأدوار المكتملة: <span id="completedCount">0</span></span>
+                        <span class="stat">Sadek POS - by Omar Alothman</span>
                         <span class="stat">الحالة: <span class="excellent" id="performanceStatus">ممتاز</span></span>
                     </div>
                 </div>
@@ -744,6 +747,11 @@
 
         // دالة إنهاء الخدمة
         function completeService(number) {
+            const now = new Date();
+            now.setHours(now.getHours() + 3);
+            const tdate = now.toISOString().split('T')[0];
+            console.log(tdate);
+            console.log(number);
             fetch('php/update_status.php', {
                 method: 'POST',
                 headers: {
@@ -752,7 +760,7 @@
                 body: JSON.stringify({ 
                     number: number, 
                     status: 'completed',
-                    date: new Date().toISOString().split('T')[0]
+                    date: tdate
                 })
             })
             .then(response => response.json())

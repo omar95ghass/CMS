@@ -492,11 +492,16 @@
         let lastProcessedIds = new Set(); // لتتبع النداءات المعالجة مسبقاً
         let continuousAnnouncements = new Map(); // تتبع النداءات المستمرة
         let announcementIntervals = new Map(); // تتبع الفترات الزمنية للنداءات
+        let hasPlayedAnnouncement = false;
 
         function playNumber(number, windowNumber, onComplete) {
             let q = [];
             function e(filename) { q.push(filename); }
-
+            
+            if (!hasPlayedAnnouncement) {
+                e('announcement');
+                hasPlayedAnnouncement = true; // ما عاد يشتغل إلا بعد ما نعيد الدورة
+            }
             e('number');
             
             if (number >= 1 && number <= 19) {
@@ -513,7 +518,9 @@
             e(windowNumber);
 
             function next() {
-                if (q.length === 0) return onComplete && onComplete();
+                if (q.length === 0){ 
+                    return onComplete && onComplete();
+                }
                 let a = new Audio();
                 let filename = q.shift();
                 
@@ -544,10 +551,10 @@
             const callKey = `${call.id}_${call.number}_${call.clinic}`;
             
             // إذا كان النداء مستمر بالفعل، لا نبدأ نداء جديد
-            // if (continuousAnnouncements.has(callKey)) {
-            //     console.log('Continuous announcement already exists for:', callKey);
-            //     return;
-            // }
+            if (continuousAnnouncements.has(callKey)) {
+                console.log('Continuous announcement already exists for:', callKey);
+                return;
+            }
             
             console.log('Starting continuous announcement for:', callKey);
             
@@ -570,6 +577,7 @@
                 if (announcement) {
                     announcement.announcementCount++;
                     console.log(`Announcement #${announcement.announcementCount} for ${callKey}`);
+                    hasPlayedAnnouncement = false;
                     playAnnouncement(call);
                 }
             }, 20000); // كل 20 ثانية
@@ -588,6 +596,7 @@
             
             console.log('Playing announcement:', call.number, call.clinic, 'Window:', call.window_number);
             isPlaying = true;
+            // hasPlayedAnnouncement = false;
             playNumber(call.number, call.window_number, () => {
                 isPlaying = false;
                 console.log('Finished playing announcement:', call.number);
@@ -599,6 +608,7 @@
                     }, 1000); // تم تقليل الفترة إلى ثانية واحدة
                 }
             });
+            hasPlayedAnnouncement = true;
         }
 
         // فحص النداءات المستمرة
@@ -878,6 +888,7 @@
                 // نطق التالي بعد 2 ثواني
                 setTimeout(playFromQueue, 2000);
             });
+            hasPlayedAnnouncement = true;
         }
 
         function fetchAnnouncedNumbers() {

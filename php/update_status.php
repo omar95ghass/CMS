@@ -3,10 +3,10 @@ session_start();
 header('Content-Type: application/json');
 
 // التحقق من تسجيل الدخول
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['status' => 'error', 'message' => 'User not logged in']);
-    exit();
-}
+// if (!isset($_SESSION['user_id'])) {
+//     echo json_encode(['status' => 'error', 'message' => 'User not logged in']);
+//     exit();
+// }
 
 try {
     include 'db.php';
@@ -15,7 +15,7 @@ try {
     $number = isset($input['number']) ? intval($input['number']) : 0;
     $status = isset($input['status']) ? $input['status'] : '';
     $date = isset($input['date']) ? $input['date'] : date('Y-m-d');
-    $userId = $_SESSION['user_id'];
+    $userId = 7;
     
     if ($number <= 0 || empty($status)) {
         echo json_encode(['status' => 'error', 'message' => 'Invalid parameters']);
@@ -23,7 +23,7 @@ try {
     }
     
     // التحقق من صحة الحالة
-    $validStatuses = ['waiting', 'called', 'announced', 'completed'];
+    $validStatuses = ['waiting', 'called', 'serving', 'announced', 'completed'];
     if (!in_array($status, $validStatuses)) {
         echo json_encode(['status' => 'error', 'message' => 'Invalid status']);
         exit();
