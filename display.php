@@ -527,8 +527,9 @@
 
         // تسجيل تشغيل النداء (بدون تغيير الحالة)
         function markPlayed(id) {
-            // لا نحتاج لتسجيل شيء، فقط نضيف المعرف إلى lastProcessedIds
+            // إضافة المعرف إلى lastProcessedIds للنداءات الجديدة فقط
             lastProcessedIds.add(id);
+            console.log('Marked as played:', id, 'Total processed:', lastProcessedIds.size);
         }
 
         // جلب النداءات الجديدة فقط
@@ -544,11 +545,16 @@
                         const newCalls = data.calls.filter(call => {
                             // إذا كانت الحالة 'announced'، اسمح بإعادة التشغيل دائماً (إعادة النداء)
                             if (call.status === 'announced') {
+                                // إزالة المعرف من lastProcessedIds للسماح بإعادة التشغيل
+                                lastProcessedIds.delete(call.id);
+                                console.log('Found announced call for recall:', call.id, call.number, call.clinic);
                                 return true;
                             }
                             // للنداءات الجديدة، تحقق من عدم معالجتها مسبقاً
                             return !lastProcessedIds.has(call.id) && call.status === 'called';
                         });
+                        
+                        console.log('New calls found:', newCalls.length, 'Total calls:', data.calls.length);
                         
                         newCalls.forEach(call => {
                             playbackQueue.push(call);
@@ -800,6 +806,9 @@
                 setInterval(loadSettings, 60000); // تحديث الإعدادات كل دقيقة
             }
 
+            // بدء التطبيق تلقائياً بعد 2 ثانية
+            setTimeout(startApp, 2000);
+            
             startButton.addEventListener('click', startApp);
         });
 
