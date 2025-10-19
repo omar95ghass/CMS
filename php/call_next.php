@@ -23,8 +23,8 @@ if ($result->num_rows > 0) {
     $number = $row['number'];
     $clinic = $row['clinic'];
 
-    // تحديث حالة الدور إلى 'called' - فقط للدور المحدد
-    $stmt_update = $conn->prepare("UPDATE queue SET status = 'called' WHERE id = ?");
+    // تحديث حالة الدور إلى 'serving' - بدء الخدمة
+    $stmt_update = $conn->prepare("UPDATE queue SET status = 'serving' WHERE id = ?");
     $stmt_update->bind_param('i', $id);
     $stmt_update->execute();
     $stmt_update->close();

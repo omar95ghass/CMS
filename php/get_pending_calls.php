@@ -7,14 +7,14 @@ try {
     
     $today = date('Y-m-d');
     
-    // جلب النداءات التي تحتاج إلى إعلان (called أو announced) لجميع الشبابيك
+    // جلب النداءات التي تحتاج إلى إعلان (called, announced, serving) لجميع الشبابيك
     // هذا الملف يستخدم في display.php لعرض جميع النداءات
     $stmt = $conn->prepare("
         SELECT q.id, q.number, q.clinic, q.status, q.created_at, u.window_number 
         FROM queue q 
         JOIN queue_users u ON q.user_id = u.id 
         WHERE q.date = ? 
-        AND q.status IN ('called', 'announced') 
+        AND q.status IN ('called', 'announced', 'serving') 
         AND q.created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)
         ORDER BY q.created_at ASC
     ");
