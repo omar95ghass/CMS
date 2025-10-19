@@ -25,12 +25,12 @@ try {
         exit();
     }
     
-    // البحث عن الدور المحدد
+    // البحث عن الدور المحدد (يمكن أن يكون 'called' أو 'announced')
     $stmt = $conn->prepare("
         SELECT q.*, u.window_number 
         FROM queue q 
         JOIN queue_users u ON q.user_id = u.id 
-        WHERE q.user_id = ? AND q.number = ? AND q.clinic = ? AND q.date = CURDATE() AND q.status = 'announced'
+        WHERE q.user_id = ? AND q.number = ? AND q.clinic = ? AND q.date = CURDATE() AND (q.status = 'called' OR q.status = 'announced')
     ");
     
     if (!$stmt) {
