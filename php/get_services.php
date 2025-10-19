@@ -11,13 +11,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 try {
     include 'db.php';
     
-    $stmt = $conn->prepare("SELECT id, username, window_number, role FROM queue_users WHERE role = 'counter' ORDER BY window_number");
+    $stmt = $conn->prepare("SELECT id, name FROM services ORDER BY name");
     $stmt->execute();
     $result = $stmt->get_result();
     
-    $users = [];
+    $services = [];
     while ($row = $result->fetch_assoc()) {
-        $users[] = $row;
+        $services[] = $row;
     }
     
     $stmt->close();
@@ -25,14 +25,14 @@ try {
     
     echo json_encode([
         'status' => 'success',
-        'users' => $users
+        'services' => $services
     ]);
     
 } catch (Exception $e) {
-    error_log("Get users error: " . $e->getMessage());
+    error_log("Get services error: " . $e->getMessage());
     echo json_encode([
         'status' => 'error',
-        'message' => 'حدث خطأ في جلب المستخدمين'
+        'message' => 'حدث خطأ في جلب الخدمات'
     ]);
 }
 ?>
