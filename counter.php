@@ -626,7 +626,7 @@
             .then(data => {
                 if (data.status === 'success') {
                     currentServingNumber = parseInt(number);
-                    currentServingClinic = clinic;
+                    currentServingClinic = data.clinic;
                     document.getElementById('currentNumber').textContent = number;
                     showAlert(`تم نداء الدور رقم ${number}`, 'success');
                     closeModal();
