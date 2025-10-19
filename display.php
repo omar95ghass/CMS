@@ -497,13 +497,10 @@
             next();
         }
 
-        // علامة Announce بعد النطق
-        function markAnnounced(id) {
-            fetch('php/mark_announced.php', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: 'id=' + encodeURIComponent(id)
-            }).catch(console.error);
+        // تسجيل تشغيل النداء (بدون تغيير الحالة)
+        function markPlayed(id) {
+            // لا نحتاج لتسجيل شيء، فقط نضيف المعرف إلى lastProcessedIds
+            lastProcessedIds.add(id);
         }
 
         // جلب النداءات الجديدة فقط
@@ -515,14 +512,23 @@
                 .then(data => {
                     if (data.status === 'success') {
                         // تصفية النداءات الجديدة فقط التي لم يتم معالجتها
-                        const newCalls = data.calls.filter(call => 
-                            !lastProcessedIds.has(call.id) && 
-                            (call.status === 'called' || call.status === 'announced')
-                        );
+                        // السماح بإعادة تشغيل النداءات التي تم تحديث حالتها إلى 'announced' (إعادة النداء)
+                        const newCalls = data.calls.filter(call => {
+                            // إذا كانت الحالة 'announced'، اسمح بإعادة التشغيل دائماً (إعادة النداء)
+                            if (call.status === 'announced') {
+                                return true;
+                            }
+                            // للنداءات الجديدة، تحقق من عدم معالجتها مسبقاً
+                            return !lastProcessedIds.has(call.id) && call.status === 'called';
+                        });
                         
                         newCalls.forEach(call => {
                             playbackQueue.push(call);
-                            lastProcessedIds.add(call.id);
+                            // إضافة المعرف للنداءات الجديدة فقط (called)
+                            // لا نضيف announced لأنها قد تحتاج لإعادة تشغيل
+                            if (call.status === 'called') {
+                                lastProcessedIds.add(call.id);
+                            }
                         });
                         
                         // تشغيل النداءات فقط إذا لم يكن هناك نداء قيد التشغيل
@@ -540,7 +546,7 @@
             isPlaying = true;
             playNumber(item.number, item.window_number, () => {
                 isPlaying = false;
-                markAnnounced(item.id);
+                markPlayed(item.id);
                 // نطق التالي بعد 2 ثواني
                 setTimeout(playFromQueue, 2000);
             });
