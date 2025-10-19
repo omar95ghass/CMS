@@ -390,7 +390,7 @@
                 <div class="column center-panel">
                     <button class="action-btn success" id="callNext">التالي</button>
                     <button class="action-btn" id="callSpecific">نداء محدد</button>
-                    <button class="action-btn warning" id="recallBtn">إعادة نداء</button>
+                    <button hidden class="action-btn warning" id="recallBtn">إعادة نداء</button>
                     <button class="action-btn" id="startService">بدء الخدمة</button>
                     <button class="action-btn danger" id="completeService">إنهاء الخدمة</button>
                     <button class="action-btn info" id="transferBtn">تحويل</button>
@@ -726,7 +726,7 @@
                     if (data.status === 'success') {
                         showAlert(`تم بدء الخدمة للدور رقم ${currentServingNumber}`, 'success');
                         // إيقاف النداء المستمر
-                        stopContinuousAnnouncementForNumber(currentServingNumber);
+                        // stopContinuousAnnouncementForNumber(currentServingNumber);
                         // تحديث القائمة
                         updateQueue();
                     } else {

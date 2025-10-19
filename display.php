@@ -544,10 +544,10 @@
             const callKey = `${call.id}_${call.number}_${call.clinic}`;
             
             // إذا كان النداء مستمر بالفعل، لا نبدأ نداء جديد
-            if (continuousAnnouncements.has(callKey)) {
-                console.log('Continuous announcement already exists for:', callKey);
-                return;
-            }
+            // if (continuousAnnouncements.has(callKey)) {
+            //     console.log('Continuous announcement already exists for:', callKey);
+            //     return;
+            // }
             
             console.log('Starting continuous announcement for:', callKey);
             
@@ -841,8 +841,18 @@
                         checkContinuousAnnouncements(data.calls);
                         
                         // تصفية النداءات الجديدة فقط التي لم يتم معالجتها
+                        // تحديث مجموعة المعرفات المعالجة بناءً على الحالة الحالية
+                        const currentCalledIds = new Set(data.calls.filter(c => c.status === 'called').map(c => c.id));
+
+                        // إزالة أي IDs لم تعد بالحالة called
+                        for (const id of lastProcessedIds) {
+                            if (!currentCalledIds.has(id)) {
+                                lastProcessedIds.delete(id);
+                            }
+                        }
+
+                        // تحديد النداءات الجديدة فقط
                         const newCalls = data.calls.filter(call => {
-                            // للنداءات الجديدة، تحقق من عدم معالجتها مسبقاً
                             return !lastProcessedIds.has(call.id) && call.status === 'called';
                         });
                         

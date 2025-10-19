@@ -24,7 +24,7 @@ if ($result->num_rows > 0) {
     $clinic = $row['clinic'];
 
     // تحديث حالة الدور إلى 'serving' - بدء الخدمة
-    $stmt_update = $conn->prepare("UPDATE queue SET status = 'serving' WHERE id = ?");
+    $stmt_update = $conn->prepare("UPDATE queue SET status = 'called' WHERE id = ?");
     $stmt_update->bind_param('i', $id);
     $stmt_update->execute();
     $stmt_update->close();

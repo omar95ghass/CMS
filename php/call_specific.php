@@ -33,7 +33,7 @@ try {
         $row = $result->fetch_assoc();
         
         // تحديث حالة الدور - بدء الخدمة
-        $updateStmt = $conn->prepare("UPDATE queue SET status = 'serving' WHERE id = ?");
+        $updateStmt = $conn->prepare("UPDATE queue SET status = 'called' WHERE id = ?");
         $updateStmt->bind_param('i', $row['id']);
         
         if ($updateStmt->execute()) {

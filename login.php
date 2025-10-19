@@ -129,7 +129,7 @@ include 'config/schema_creation.php';
         .footer-text {
             color: white;
             text-align: center;
-            margin-top: 30px;
+            margin-top: 50px;
             opacity: 0.8;
         }
     </style>
@@ -165,7 +165,9 @@ include 'config/schema_creation.php';
     
     <footer>
         <div class="footer-text">
-            <p>&copy; <?php echo date('Y'); ?> نظام إدارة الطوابير - جميع الحقوق محفوظة</p>
+            <p>&copy; <?php echo date('Y'); ?> نظام CMS لإدارة الدور - جميع الحقوق محفوظة لصالح شركة صادق حسن</p>
+            <p>Developed By Dr.omar Alothman</p>
+            <p> Using MVC PHP & JS </p>
         </div>
     </footer>
 
