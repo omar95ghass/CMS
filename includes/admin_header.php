@@ -24,6 +24,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
             margin: 0;
             padding: 0;
             min-height: 100vh;
+            text-align: right;
         }
         
         .admin-container {
@@ -34,7 +35,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
         
         .admin-header {
             background: linear-gradient(135deg, #1f3c88 0%, #2c5aa0 100%);
-            color: white;
+            color: gray;
             padding: 20px 0;
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
@@ -52,7 +53,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
         }
         
         .nav-link {
-            color: white !important;
+            color: gray !important;
             padding: 10px 20px !important;
             border-radius: 25px;
             transition: all 0.3s ease;
@@ -137,12 +138,12 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
         <div class="admin-header">
             <div class="container">
                 <div class="row align-items-center">
-                    <div class="col-md-6">
+                    <div class="col-md-10">
                         <h1 class="mb-0">لوحة تحكم المدير</h1>
                         <p class="mb-0">مرحباً، <?php echo $_SESSION['username']; ?></p>
                     </div>
-                    <div class="col-md-6 text-end">
-                        <a href="php/logout_function.php" class="btn btn-outline-light">تسجيل الخروج</a>
+                    <div class="col-md-2 text-end">
+                        <a href="php/logout_function.php" style="color: red !important;" class="btn btn-outline-dark">تسجيل الخروج</a>
                     </div>
                 </div>
             </div>
@@ -151,40 +152,16 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
         <!-- Navigation -->
         <div class="admin-navbar">
             <div class="container">
-                <nav class="nav justify-content-center">
+                <nav class="nav justify-content-around">
                     <a href="admin_dashboard.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">الرئيسية</a>
                     <a href="settings.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'settings.php' ? 'active' : ''; ?>">الإعدادات</a>
-                    <a href="statistics.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'statistics.php' ? 'active' : ''; ?>">الإحصائيات</a>
+                    <a href="statistics.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'statistics.php' ? 'active' : ''; ?>">إحصائيات</a>
                     <a href="display.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'display.php' ? 'active' : ''; ?>">شاشة العرض</a>
-                    <a href="counter.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'counter.php' ? 'active' : ''; ?>">الشباك</a>
-                    <a href="error.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'error.php' ? 'active' : ''; ?>">سجل الأخطاء</a>
                 </nav>
             </div>
         </div>
 
-        <!-- Page Header -->
-        <div class="page-header">
-            <div class="container">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="admin_dashboard.php">الرئيسية</a></li>
-                        <?php if (isset($breadcrumb)): ?>
-                            <?php foreach ($breadcrumb as $item): ?>
-                                <li class="breadcrumb-item <?php echo $item['active'] ? 'active' : ''; ?>">
-                                    <?php if ($item['active']): ?>
-                                        <?php echo $item['title']; ?>
-                                    <?php else: ?>
-                                        <a href="<?php echo $item['url']; ?>"><?php echo $item['title']; ?></a>
-                                    <?php endif; ?>
-                                </li>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </ol>
-                </nav>
-                <h1 class="page-title"><?php echo $page_title ?? 'لوحة تحكم المدير'; ?></h1>
-                <p class="page-subtitle"><?php echo $page_subtitle ?? 'إدارة نظام طوابير الخدمة'; ?></p>
-            </div>
-        </div>
+        
 
         <!-- Page Content -->
         <div class="dashboard-content">

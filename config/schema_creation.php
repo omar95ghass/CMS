@@ -26,7 +26,7 @@ if (!$conn->select_db($db)) {
     // echo "✔ تم إنشاء قاعدة البيانات `$db`\n";
     $conn->select_db($db);
 } else {
-    echo "✔ قاعدة البيانات `$db` موجودة مسبقاً\n";
+    // echo "✔ قاعدة البيانات `$db` موجودة مسبقاً\n";
 }
 
 // 2) إنشاء الجداول إذا لم تكن موجودة
@@ -145,13 +145,13 @@ foreach ($tables as $sql) {
 // إضافة حقل status لجدول queue_users إذا لم يكن موجوداً
 $alterQuery = "ALTER TABLE `queue_users` ADD COLUMN `status` enum('available','closed') NOT NULL DEFAULT 'available' COMMENT 'حالة الشباك' AFTER `window_number`";
 if ($conn->query($alterQuery) === TRUE) {
-    echo "تم إضافة حقل status لجدول queue_users\n";
+    // echo "تم إضافة حقل status لجدول queue_users\n";
 } else {
     // إذا فشل، قد يكون الحقل موجوداً بالفعل
     if (strpos($conn->error, "Duplicate column name") !== false) {
-        echo "حقل status موجود بالفعل في جدول queue_users\n";
+        // echo "حقل status موجود بالفعل في جدول queue_users\n";
     } else {
-        echo "خطأ في إضافة حقل status: " . $conn->error . "\n";
+        // echo "خطأ في إضافة حقل status: " . $conn->error . "\n";
     }
 }
 
@@ -174,7 +174,7 @@ if ($result_check->num_rows == 0) {
     if ($stmt_insert->execute()) {
         // echo "تم إنشاء المستخدم admin بنجاح.";
     } else {
-        echo "Error creating admin user" . $stmt_insert->error;
+        // echo "Error creating admin user" . $stmt_insert->error;
     }
     
     $stmt_insert->close();

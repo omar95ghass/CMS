@@ -30,7 +30,7 @@ try {
         SELECT q.*, u.window_number 
         FROM queue q 
         JOIN queue_users u ON q.user_id = u.id 
-        WHERE q.user_id = ? AND q.number = ? AND q.clinic = ? AND q.date = CURDATE() AND q.status = 'called'
+        WHERE q.user_id = ? AND q.number = ? AND q.clinic = ? AND q.date = CURDATE() AND q.status = 'announced'
     ");
     
     if (!$stmt) {
@@ -50,7 +50,7 @@ try {
     $stmt->close();
     
     // تحديث حالة الدور إلى 'announced' لإعادة النداء
-    $stmt = $conn->prepare("UPDATE queue SET status = 'announced' WHERE id = ?");
+    $stmt = $conn->prepare("UPDATE queue SET status = 'called' WHERE id = ?");
     if (!$stmt) {
         throw new Exception("خطأ في إعداد استعلام التحديث: " . $conn->error);
     }

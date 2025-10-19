@@ -676,6 +676,8 @@
 
         // إعادة النداء
         document.getElementById('recallBtn').addEventListener('click', function() {
+            console.log(currentServingNumber);
+            console.log(currentServingClinic);
             if (currentServingNumber) {
                 // إرسال طلب إعادة النداء إلى الخادم
                 fetch('php/recall_queue.php', {

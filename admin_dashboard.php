@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 }
 
 include 'php/db.php';
-include 'includes/header.php';
+// include 'includes/header.php';
 ?>
 
 <!DOCTYPE html>
@@ -29,6 +29,7 @@ include 'includes/header.php';
             margin: 0;
             padding: 0;
             min-height: 100vh;
+            text-align: right;
         }
         
         .admin-container {
@@ -57,16 +58,30 @@ include 'includes/header.php';
         }
         
         .nav-link {
-            color: white !important;
+            color: black !important;
             padding: 10px 20px !important;
             border-radius: 25px;
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
         }
+
+        .nav-link-danger {
+            color: white !important;
+            padding: 10px 20px !important;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            text-decoration: none !important;
+            display: inline-block;
+        }
         
         .nav-link:hover {
             background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-link-danger:hover {
+            background: rgba(240, 7, 7, 0.7);
             transform: translateY(-2px);
         }
         
@@ -258,12 +273,12 @@ include 'includes/header.php';
         <div class="admin-header">
             <div class="container">
                 <div class="row align-items-center">
-                    <div class="col-md-6">
+                    <div class="col-md-10">
                         <h1 class="mb-0">لوحة تحكم المدير</h1>
                         <p class="mb-0">مرحباً، <?php echo $_SESSION['username']; ?></p>
                     </div>
-                    <div class="col-md-6 text-end">
-                        <a href="php/logout_function.php" class="btn btn-outline-light">تسجيل الخروج</a>
+                    <div class="col-md-2 text-end">
+                        <a href="php/logout_function.php" style="color: red !important;" class="btn btn-outline-dark">تسجيل الخروج</a>
                     </div>
                 </div>
             </div>
@@ -272,13 +287,16 @@ include 'includes/header.php';
         <!-- Navigation -->
         <div class="admin-navbar">
             <div class="container">
-                <nav class="nav justify-content-center">
+                <nav class="nav justify-content-around">
                     <a href="admin_dashboard.php" class="nav-link active">الرئيسية</a>
                     <a href="settings.php" class="nav-link">الإعدادات</a>
-                    <a href="statistics.php" class="nav-link">الإحصائيات</a>
+                    <a href="services.php" class="nav-link">الخدمات</a>
                     <a href="display.php" class="nav-link">شاشة العرض</a>
                     <a href="counter.php" class="nav-link">الشباك</a>
-                    <a href="error.php" class="nav-link">سجل الأخطاء</a>
+                    <a href="index_screens.php" class="nav-link">شاشات Dot-matrex</a>
+                    <a href="users.php" class="nav-link">المستخدمين</a>
+                    <a href="php/complete_all.php" class="btn-danger nav-link-danger">إعادة ضبط الحالات الدور</a>
+                    <!-- <a href="php/logout_function.php" class="nav-link">تسجيل خروج</a> -->
                 </nav>
             </div>
         </div>
@@ -295,7 +313,7 @@ include 'includes/header.php';
                 </div>
 
                 <!-- Charts Section -->
-                <div class="charts-section">
+                <div hidden class="charts-section">
                     <div class="chart-card">
                         <div class="chart-title">توزيع الأدوار حسب الحالة</div>
                         <canvas id="statusChart"></canvas>

@@ -118,6 +118,13 @@ include 'config/schema_creation.php';
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            min-width: 100%;
+        }
         
         .footer-text {
             color: white;
@@ -131,7 +138,7 @@ include 'config/schema_creation.php';
     <div class="login-container">
         <div class="logo">🏥</div>
         <h1 class="login-title">تسجيل الدخول</h1>
-        <p class="login-subtitle">نظام إدارة الطوابير</p>
+        <p class="login-subtitle">نظام إدارة الدور v3.1</p>
         
         <form id="loginForm">
             <div class="form-group">
@@ -156,9 +163,11 @@ include 'config/schema_creation.php';
         <div id="alertBox" class="alert alert-dismissible" style="display: none;"></div>
     </div>
     
-    <div class="footer-text">
-        <p>&copy; <?php echo date('Y'); ?> نظام إدارة الطوابير - جميع الحقوق محفوظة</p>
-    </div>
+    <footer>
+        <div class="footer-text">
+            <p>&copy; <?php echo date('Y'); ?> نظام إدارة الطوابير - جميع الحقوق محفوظة</p>
+        </div>
+    </footer>
 
     <script src="css/bootstrap/jQuery/jquery-3.6.0.min.js"></script>
     <script>
@@ -187,7 +196,7 @@ include 'config/schema_creation.php';
                         showAlert('تم تسجيل الدخول بنجاح', 'success');
                         setTimeout(() => {
                             if (data.role === 'admin') {
-                                window.location.href = 'index.php';
+                                window.location.href = 'admin_dashboard.php';
                             } else {
                                 window.location.href = 'counter.php';
                             }

@@ -51,6 +51,7 @@
             align-items: center;
             justify-content: center;
             padding: 40px 20px;
+            padding-bottom: 250px;
         }
         
         .display-card {
@@ -67,7 +68,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 30px;
-            margin-top: 30px;
+            /* margin-top: 5px; */
         }
         
         .window-card {
@@ -104,7 +105,7 @@
         .window-number {
             font-size: 1.5rem;
             font-weight: bold;
-            color: #1f3c88;
+            color: navy;
             margin-bottom: 15px;
         }
         
@@ -186,6 +187,10 @@
         }
         
         .footer-section {
+            position: fixed;
+            top: 0;
+            left:0;
+            right:0;
             background: white;
             border-top: 1px solid #ddd;
             text-align: center;
@@ -288,10 +293,33 @@
             right: 0;
             background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             color: white;
-            padding: 15px 20px;
+            padding: 10px 15px;
             box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
             z-index: 1000;
             border-top: 3px solid #3498db;
+            transition: transform 0.4s ease;
+        }
+
+        .windows-status-bar.hidden {
+            transform: translateY(100%);
+        }
+
+        .toggle-bar-btn {
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 15px 15px 0 0;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        .toggle-bar-btn:hover {
+            background: #2980b9;
         }
         
         .status-bar-header {
@@ -426,7 +454,7 @@
         </div>
         
         <!-- المحتوى الرئيسي -->
-        <div class="header-section">
+        <div class="header-section mt-4">
             <h1>مركز خدمة المواطن</h1>
             <p>النافذة الواحدة - عرض الأدوار الحالية</p>
         </div>
@@ -691,7 +719,7 @@
                 
                 return `
                     <div class="window-card ${statusClass}">
-                        <div class="window-number">شباك ${window.window_number}</div>
+                        <div style="color: white !important;" class="window-number">شباك ${window.window_number}</div>
                         <div class="window-status">${statusText}</div>
                         <div class="window-clinic">${window.clinic || 'غير محدد'}</div>
                         <button class="toggle-status-btn ${window.status === 'closed' ? 'closed' : ''}" 
@@ -768,10 +796,24 @@
 
             startButton.addEventListener('click', startApp);
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('toggleBarBtn');
+            const statusBar = document.getElementById('windowsStatusBar');
+
+            if (toggleBtn && statusBar) {
+                toggleBtn.addEventListener('click', () => {
+                    const isHidden = statusBar.classList.toggle('hidden');
+                    toggleBtn.textContent = isHidden ? '⬆️ إظهار الشريط' : '⬇️ إخفاء الشريط';
+                });
+            }
+        });
+
     </script>
     
     <!-- شريط حالة الشبابيك -->
     <div id="windowsStatusBar" class="windows-status-bar" style="display: none;">
+        <button id="toggleBarBtn" class="toggle-bar-btn">⬇️ إخفاء الشريط</button>
         <div class="status-bar-header">
             <h4>حالة الشبابيك</h4>
             <div class="status-legend">
@@ -793,5 +835,6 @@
             <!-- الشبابيك ستظهر هنا -->
         </div>
     </div>
+
 </body>
 </html>

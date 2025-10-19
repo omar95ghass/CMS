@@ -132,22 +132,6 @@ try {
 </head>
 <body>
     <div class="container-fluid">
-        <!-- شريط التنقل -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-            <div class="container">
-                <a class="navbar-brand" href="index.php">
-                    <img src="images/logo/logo.png" alt="Logo" height="30" class="me-2">
-                    نظام إدارة الطوابير
-                </a>
-                <div class="navbar-nav ms-auto">
-                    <a class="nav-link" href="index.php">الرئيسية</a>
-                    <a class="nav-link" href="services.php">الخدمات</a>
-                    <a class="nav-link" href="counter.php">النوافذ</a>
-                    <a class="nav-link active" href="statistics.php">الإحصائيات</a>
-                    <a class="nav-link" href="php/logout_function.php">تسجيل الخروج</a>
-                </div>
-            </div>
-        </nav>
 
         <div class="container">
             <h1 class="text-center mb-4">الإحصائيات والتقارير</h1>
