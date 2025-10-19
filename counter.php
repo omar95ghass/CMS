@@ -707,6 +707,41 @@
             }
         });
 
+        // بدء الخدمة
+        document.getElementById('startService').addEventListener('click', function() {
+            if (currentServingNumber) {
+                // تحديث حالة الدور إلى "serving" في قاعدة البيانات
+                fetch('php/start_service.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        number: currentServingNumber,
+                        clinic: currentServingClinic 
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showAlert(`تم بدء الخدمة للدور رقم ${currentServingNumber}`, 'success');
+                        // إيقاف النداء المستمر
+                        stopContinuousAnnouncementForNumber(currentServingNumber);
+                        // تحديث القائمة
+                        updateQueue();
+                    } else {
+                        showAlert('فشل في بدء الخدمة: ' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error starting service:', error);
+                    showAlert('حدث خطأ في بدء الخدمة', 'error');
+                });
+            } else {
+                showAlert('لا يوجد دور قيد الخدمة', 'warning');
+            }
+        });
+
         // دالة إنهاء الخدمة
         function completeService(number) {
             fetch('php/update_status.php', {
@@ -738,6 +773,31 @@
                 showAlert('خطأ في إنهاء الخدمة', 'error');
             });
         }
+
+        // دالة لإيقاف النداء المستمر (سيتم استدعاؤها من display.php)
+        function stopContinuousAnnouncementForNumber(number) {
+            // إرسال طلب لإيقاف النداء المستمر
+            if (window.parent && window.parent.stopContinuousAnnouncementForNumber) {
+                window.parent.stopContinuousAnnouncementForNumber(number);
+            }
+            console.log('Stopping continuous announcement for number:', number);
+        }
+
+        // دالة لعرض حالة النظام
+        function showSystemStatus() {
+            console.log('=== System Status ===');
+            console.log('Current serving number:', currentServingNumber);
+            console.log('Current serving clinic:', currentServingClinic);
+            console.log('Service timer active:', serviceTimer !== null);
+            console.log('====================');
+        }
+
+        // إضافة اختصارات لوحة المفاتيح
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 's') {
+                showSystemStatus();
+            }
+        });
 
         // تسجيل الخروج
         document.getElementById('logoutBtn').addEventListener('click', function() {

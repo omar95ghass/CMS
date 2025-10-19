@@ -32,8 +32,8 @@ try {
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         
-        // تحديث حالة الدور - فقط للدور المحدد
-        $updateStmt = $conn->prepare("UPDATE queue SET status = 'called' WHERE id = ?");
+        // تحديث حالة الدور - بدء الخدمة
+        $updateStmt = $conn->prepare("UPDATE queue SET status = 'serving' WHERE id = ?");
         $updateStmt->bind_param('i', $row['id']);
         
         if ($updateStmt->execute()) {
