@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 try {
-    include 'db.php';
+    include 'dual_db.php';
     
     $user_id = $_SESSION['user_id'];
     $today = date('Y-m-d');
@@ -27,14 +27,18 @@ try {
                 END, 
                 id ASC";
     
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param('is', $user_id, $today);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $result = $dual_db->query($sql, [$user_id, $today]);
     
     $queueData = [];
-    if ($result->num_rows > 0) {
+    if ($current_db_type === 'mysql') {
         while($row = $result->fetch_assoc()) {
+            // إضافة معلومات إضافية مفيدة
+            $row['waiting_time'] = calculateWaitingTime($row['created_at']);
+            $row['status_text'] = getStatusText($row['status']);
+            $queueData[] = $row;
+        }
+    } else {
+        while($row = $result->fetch(PDO::FETCH_ASSOC)) {
             // إضافة معلومات إضافية مفيدة
             $row['waiting_time'] = calculateWaitingTime($row['created_at']);
             $row['status_text'] = getStatusText($row['status']);
@@ -42,17 +46,15 @@ try {
         }
     }
     
-    echo json_encode(['status' => 'success', 'data' => $queueData]);
-    
-    $stmt->close();
+    echo json_encode([
+        'status' => 'success', 
+        'data' => $queueData,
+        'database' => $current_db_type
+    ]);
     
 } catch (Exception $e) {
     error_log("Get queue error: " . $e->getMessage());
     echo json_encode(['status' => 'error', 'message' => 'Database error occurred']);
-} finally {
-    if (isset($conn)) {
-        $conn->close();
-    }
 }
 
 // دالة حساب وقت الانتظار

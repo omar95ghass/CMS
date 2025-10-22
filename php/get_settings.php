@@ -2,25 +2,28 @@
 header('Content-Type: application/json');
 
 try {
-    include 'db.php';
+    include 'dual_db.php';
     
     $settings = [];
-    $stmt = $conn->prepare("SELECT setting_key, setting_value FROM system_settings");
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $sql = "SELECT setting_key, setting_value FROM system_settings";
+    $result = $dual_db->query($sql);
     
-    while ($row = $result->fetch_assoc()) {
-        $settings[$row['setting_key']] = $row['setting_value'];
+    if ($current_db_type === 'mysql') {
+        while ($row = $result->fetch_assoc()) {
+            $settings[$row['setting_key']] = $row['setting_value'];
+        }
+    } else {
+        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+            $settings[$row['setting_key']] = $row['setting_value'];
+        }
     }
-    
-    $stmt->close();
-    $conn->close();
     
     // إعدادات افتراضية إذا لم تكن موجودة
     $defaultSettings = [
         'center_name' => 'مركز خدمة المواطن',
         'ticker_messages' => "✅ مركز خدمة المواطن في دمر\n⚠️ يرجى الاحتفاظ بتذكرة الدور\n📢 لا تخرج من الصالة لتتمكن من سماع النداء\n💡 نتمنى لكم يوماً طيباً",
-        'printer_name' => 'EPSON TM-T20'
+        'printer_name' => 'EPSON TM-T20',
+        'logo_path' => 'images/logo/logo.png'
     ];
     
     $settings = array_merge($defaultSettings, $settings);
@@ -38,7 +41,8 @@ try {
         'settings' => [
             'center_name' => 'مركز خدمة المواطن',
             'ticker_messages' => "✅ مركز خدمة المواطن في دمر\n⚠️ يرجى الاحتفاظ بتذكرة الدور\n📢 لا تخرج من الصالة لتتمكن من سماع النداء\n💡 نتمنى لكم يوماً طيباً",
-            'printer_name' => 'EPSON TM-T20'
+            'printer_name' => 'EPSON TM-T20',
+            'logo_path' => 'images/logo/logo.png'
         ]
     ]);
 }

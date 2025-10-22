@@ -74,7 +74,18 @@
             padding: 5px 15px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
             font-size: 18px;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-section img {
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         .notifications {
             font-weight: bold;
@@ -368,6 +379,9 @@
     <div class="tablet-frame">
         <div class="app-container">
             <div class="top-bar">
+                <div class="logo-section">
+                    <img id="counterLogo" src="images/logo/logo.png" alt="Logo" style="height: 30px; margin-left: 10px;">
+                </div>
                 <span class="user-info">النافذة <?php echo $winNum; ?> | <?php echo date('Y-m-d H:i:s'); ?></span>
                 <span class="notifications">
                     <span class="icon">🔔</span> <span id="waitingCount">0</span> زائر في الانتظار
@@ -456,6 +470,21 @@
                 `النافذة <?php echo $winNum; ?> | ${now.toLocaleString('ar-SA')}`;
         }
         setInterval(updateTime, 1000);
+        
+        // تحديث صورة اللوغو
+        function updateLogo() {
+            fetch('php/get_settings.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success' && data.settings.logo_path) {
+                        const logoImg = document.getElementById('counterLogo');
+                        if (logoImg) {
+                            logoImg.src = data.settings.logo_path + '?t=' + new Date().getTime();
+                        }
+                    }
+                })
+                .catch(error => console.error('Error loading logo:', error));
+        }
 
         // تحديث قائمة الأدوار
         function updateQueue() {
@@ -972,6 +1001,7 @@
         
         // تحديث أولي
         updateQueue();
+        updateLogo();
     </script>
 </body>
 </html>

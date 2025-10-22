@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 try {
     
-  require 'db.php'; 
+  require 'dual_db.php'; 
   
   // جلب البيانات من الطلب
   $input = file_get_contents('php://input');
@@ -33,30 +33,30 @@ try {
   $date = date('Y-m-d');
 
   // 1. الحصول على آخر رقم الدور وإضافة دور جديد
-  $stmt = $conn->prepare(
-    "SELECT MAX(number) AS max_number
-    FROM queue
-    WHERE `date` = ?"
-  );
-  $stmt->bind_param('s', $date);
-  $stmt->execute();
-  $res = $stmt->get_result()->fetch_assoc();
-  $max_number = $res['max_number'] ?? 0;
-  $number   = $max_number + 1;
-  $stmt->close();
+  $sql = "SELECT MAX(number) AS max_number FROM queue WHERE `date` = ?";
+  $result = $dual_db->query($sql, [$date]);
+  
+  $row = null;
+  if ($current_db_type === 'mysql') {
+    $row = $result->fetch_assoc();
+  } else {
+    $row = $result->fetch(PDO::FETCH_ASSOC);
+  }
+  
+  $max_number = $row['max_number'] ?? 0;
+  $number = $max_number + 1;
   
   // إضافة الدور الجديد لكل شباك مرتبط بالخدمة
   foreach ($user_ids as $user_id) {
-    $stmt = $conn->prepare(
-      "INSERT INTO queue
-      (user_id, clinic, number, status, `date`)
-      VALUES (?, ?, ?, 'waiting', ?)"
-    );
-    $stmt->bind_param('isis', $user_id, $clinic, $number, $date);
-    if (!$stmt->execute()) {
-      throw new Exception('Insert failed for user_id ' . $user_id . ': ' . $stmt->error);
-    }
-    $stmt->close();
+    $queue_data = [
+      'user_id' => $user_id,
+      'clinic' => $clinic,
+      'number' => $number,
+      'status' => 'waiting',
+      'date' => $date
+    ];
+    
+    $dual_db->insert('queue', $queue_data);
   }
 
   // 2. إرجاع بيانات الدور بنجاح للواجهة الأمامية
@@ -65,18 +65,10 @@ try {
     'message' => 'تم إضافة الدور بنجاح.',
     'number' => $number,
     'clinic' => $clinic, // مهم لتوليد الصورة
-    'user_ids' => $user_ids
+    'user_ids' => $user_ids,
+    'database' => $current_db_type
   ]);
 
-
-} catch (PDOException $dbEx) {
-  error_log("Database Error: " . $dbEx->getMessage());
-  http_response_code(500);
-  echo json_encode([
-    'status' => 'error',
-    'message' => 'خطأ في قاعدة البيانات',
-    'error_code' => $dbEx->getCode()
-  ]);
 
 } catch (Exception $ex) {
   error_log("General Error: " . $ex->getMessage());
@@ -86,10 +78,5 @@ try {
     'message' => $ex->getMessage(),
     'error_code' => $ex->getCode()
   ]);
-
-} finally {
-  if (isset($conn)) {
-    $conn = null;
-  }
 }
 ?>

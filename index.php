@@ -209,8 +209,8 @@
 <body>
   <!-- الهيدر المحسن -->
   <header>
-    <img src="images/logo/logo.png" alt="Logo">
-    <h1>مركز خدمة المواطن - النافذة الواحدة</h1>
+    <img id="headerLogo" src="images/logo/logo.png" alt="Logo">
+    <h1 id="headerTitle">مركز خدمة المواطن - النافذة الواحدة</h1>
     <h4>المس الخدمة لقطع الدور</h4>
   </header>
 
@@ -246,6 +246,7 @@
                     systemSettings = data.settings;
                     updateTickerMessages();
                     updateCenterName();
+                    updateLogo();
                 }
             })
             .catch(error => console.error('Error loading settings:', error));
@@ -265,6 +266,14 @@
         const centerTitle = document.querySelector('header h1');
         if (centerTitle && systemSettings.center_name) {
             centerTitle.textContent = systemSettings.center_name;
+        }
+    }
+    
+    // تحديث صورة اللوغو
+    function updateLogo() {
+        const logoImg = document.getElementById('headerLogo');
+        if (logoImg && systemSettings.logo_path) {
+            logoImg.src = systemSettings.logo_path + '?t=' + new Date().getTime();
         }
     }
     
