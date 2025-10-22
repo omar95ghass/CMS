@@ -14,8 +14,8 @@
         <a class="navbar-brand text-light" href="index.php">واجهة الخدمات</a>
         <div class="collapse navbar-collapse d-flex justify-content-between">
         <ul class="navbar-nav me-auto">
+            <li class=""><a class="btn btn-sm btn-outline-info mx-1" href="admin_dashboard.php">العودة للداشبورد</a></li>
             <li class=""><a class="btn btn-sm btn-outline-primary mx-1" href="index_screens.php">إدارة شاشات النوافذ</a></li>
-            <li class=""><a class="btn btn-sm btn-outline-primary mx-1" href="index_assign.php">تعيين شاشات النوافذ</a></li>
         </ul>
         <a class="btn btn-outline-dark mx-1" href="php/logout_function.php">تسجيل خروج</a>
         </div>

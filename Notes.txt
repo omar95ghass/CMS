@@ -1,0 +1,19 @@
+- admin_dashoard -> statics cards bolder. (done)
+- Services -> redirct to index.php (done)
+- index_assign.php -> remove logout button (re-evaluate)
+- users -> remove acountant role (done)
+- statics in settings should be in admin_dashboard (done)
+- settings (remove statics cards) (done)
+- settings -> add logo updade
+- statistcs (count of each window and serving time) (done)
+- dublication of call for the same number
+- transfer logic must be after start service
+- display -> logo
+
+
+أريد منك إضافة قاعدة بيانات sqlite بنفس بنية قاعدة البيانات الحالية تماما حيث يقوم النظام بتسجيل البيانات على كلا قاعدتي البيانات (الحالية mysql والجديدة sqlite) بالتوازي
+وعند فشل الاتصال بإحداها يتم بدء الاتصال واستعمال الثانية مع إبلاغ المستخدم وتسجيل حالة الفشل في ملف logs في مجلد logs 
+وعندما يتم حل مشكلة الفشل ويتم التواصل مع قاعدة البيانات mysql يتم مزامنة البيانات بين قاعدتي البيانات وبدء استخدام mysql
+وأيضا قم بإنشاء عرض لحالة قواعد البيانات والاتصال بها وأيها قيد الاستخدام في واجهة settings.php مع حالة المزامنة 
+أيضا في settings.php أضف خيار لاستبدال صورة اللوغو في ملف الصور بحيث يتمكن المستخدم من تحديث واختيار صورة لوغو جديدة له
+أضف أيضا صورة اللوغو في index.php و counter.php بشكل مناسب وجمالي

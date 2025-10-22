@@ -74,7 +74,7 @@
             padding: 5px 15px;
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: 18px;
         }
         .notifications {
             font-weight: bold;

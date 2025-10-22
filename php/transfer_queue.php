@@ -38,7 +38,7 @@ try {
         SELECT q.*, u.window_number as current_window 
         FROM queue q 
         JOIN queue_users u ON q.user_id = u.id 
-        WHERE q.user_id = ? AND q.number = ? AND q.clinic = ? AND q.date = CURDATE() AND q.status = 'waiting'
+        WHERE q.user_id = ? AND q.number = ? AND q.clinic = ? AND q.date = CURDATE() AND q.status = 'serving'
     ");
     
     if (!$stmt) {

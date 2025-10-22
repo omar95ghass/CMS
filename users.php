@@ -7,6 +7,7 @@
   <link href="css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="p-4" style="text-align: right;">
+  <a class="btn btn-sm btn-outline-info mx-1" href="admin_dashboard.php">العودة للداشبورد</a>
   <div class="container">
     <div class="row  d-flex justify-content-between align-items-center p-4">
       <h1 class="mb-4">إدارة المستخدمين</h1>
@@ -63,7 +64,6 @@
               <select id="role" class="form-control">
                 <option value="admin">مشرف</option>
                 <option value="counter">شباك</option>
-                <option value="cashier">محاسب</option>
               </select>
             </div>
           </div>

@@ -347,11 +347,11 @@ try {
     <div class="settings-card">
         <div class="settings-header">
             <h2><i class="fas fa-users-cog"></i> إدارة ربط المستخدمين بالخدمات</h2>
-            <p>ربط المستخدمين بدور counter بالخدمات المتاحة</p>
+            <p>ربط المستخدمين بالخدمات المتاحة</p>
         </div>
         
         <!-- إحصائيات سريعة -->
-        <div class="row mb-4" id="statsRow">
+        <!-- <div class="row mb-4" id="statsRow">
             <div class="col-md-3">
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -396,7 +396,7 @@ try {
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         
         <div class="settings-body">
             <div class="row">
@@ -568,17 +568,17 @@ try {
     }
 
     // تحديث الإحصائيات
-    function updateStats() {
-        const totalUsers = users.length;
-        const totalServices = services.length;
-        const totalLinks = userServices.length;
-        const coveragePercent = totalUsers > 0 ? Math.round((totalLinks / (totalUsers * totalServices)) * 100) : 0;
+    // function updateStats() {
+    //     const totalUsers = users.length;
+    //     const totalServices = services.length;
+    //     const totalLinks = userServices.length;
+    //     const coveragePercent = totalUsers > 0 ? Math.round((totalLinks / (totalUsers * totalServices)) * 100) : 0;
 
-        document.getElementById('totalUsers').textContent = totalUsers;
-        document.getElementById('totalServices').textContent = totalServices;
-        document.getElementById('totalLinks').textContent = totalLinks;
-        document.getElementById('coveragePercent').textContent = coveragePercent + '%';
-    }
+    //     document.getElementById('totalUsers').textContent = totalUsers;
+    //     document.getElementById('totalServices').textContent = totalServices;
+    //     document.getElementById('totalLinks').textContent = totalLinks;
+    //     document.getElementById('coveragePercent').textContent = coveragePercent + '%';
+    // }
 
     // تحديث جدول ربط المستخدمين بالخدمات
     function updateUserServicesTable() {

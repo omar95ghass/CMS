@@ -290,11 +290,11 @@ include 'php/db.php';
                 <nav class="nav justify-content-around">
                     <a href="admin_dashboard.php" class="nav-link active">الرئيسية</a>
                     <a href="settings.php" class="nav-link">الإعدادات</a>
+                    <a href="statistics.php" class="nav-link">الإحصائيات</a>
                     <a href="services.php" class="nav-link">الخدمات</a>
-                    <a href="display.php" class="nav-link">شاشة العرض</a>
-                    <a href="counter.php" class="nav-link">الشباك</a>
                     <a href="index_screens.php" class="nav-link">شاشات Dot-matrex</a>
                     <a href="users.php" class="nav-link">المستخدمين</a>
+                    <a href="display.php" class="nav-link">شاشة العرض</a>
                     <a href="php/complete_all.php" class="btn-danger nav-link-danger">إعادة ضبط الحالات الدور</a>
                     <!-- <a href="php/logout_function.php" class="nav-link">تسجيل خروج</a> -->
                 </nav>
@@ -388,22 +388,17 @@ include 'php/db.php';
                 <div class="stat-card primary">
                     <div class="stat-icon">📊</div>
                     <div class="stat-number">${stats.total_queues}</div>
-                    <div class="stat-label">إجمالي الأدوار</div>
+                    <div style="color: white !important;" class="stat-label">إجمالي الأدوار</div>
                 </div>
                 <div class="stat-card success">
                     <div class="stat-icon">✅</div>
                     <div class="stat-number">${stats.completed_queues}</div>
-                    <div class="stat-label">الأدوار المكتملة</div>
+                    <div style="color: white !important;" class="stat-label">الأدوار المكتملة</div>
                 </div>
                 <div class="stat-card warning">
                     <div class="stat-icon">⏳</div>
                     <div class="stat-number">${stats.waiting_queues}</div>
-                    <div class="stat-label">الأدوار في الانتظار</div>
-                </div>
-                <div class="stat-card info">
-                    <div class="stat-icon">⏱️</div>
-                    <div class="stat-number">${stats.avg_service_time}</div>
-                    <div class="stat-label">متوسط مدة الخدمة</div>
+                    <div style="color: white !important;" class="stat-label">الأدوار في الانتظار</div>
                 </div>
             `;
         }
@@ -550,11 +545,10 @@ include 'php/db.php';
                     <div class="window-item">
                         <div>
                             <h5 class="mb-1">شباك ${window.window_number}</h5>
-                            <small class="text-muted">${window.clinic || 'غير محدد'}</small>
+                            <small class="text-muted d-block mt-1">دور الشباك لليوم: ${window.active_queues || 0} </small>
                         </div>
                         <div>
                             <span class="window-status-badge ${statusClass}">${statusText}</span>
-                            <small class="text-muted d-block mt-1">${window.active_queues || 0} دور نشط</small>
                         </div>
                     </div>
                 `;

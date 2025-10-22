@@ -155,8 +155,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
                 <nav class="nav justify-content-around">
                     <a href="admin_dashboard.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">الرئيسية</a>
                     <a href="settings.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'settings.php' ? 'active' : ''; ?>">الإعدادات</a>
-                    <a href="statistics.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'statistics.php' ? 'active' : ''; ?>">إحصائيات</a>
-                    <a href="display.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'display.php' ? 'active' : ''; ?>">شاشة العرض</a>
                 </nav>
             </div>
         </div>

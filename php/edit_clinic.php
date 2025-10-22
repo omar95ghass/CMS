@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         $u = $conn->prepare("UPDATE services SET name=? WHERE id=?");
         $u->bind_param('si',$newName,$id);
         $u->execute();
-        header('Location: index.php');
+        header('Location: services.php');
         exit;
     }
 }

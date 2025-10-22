@@ -1,6 +1,7 @@
 <?php
 require 'php/db.php';
 $result = $conn->query("SELECT * FROM services ORDER BY id");
+$idnum = 1;
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -15,12 +16,7 @@ $result = $conn->query("SELECT * FROM services ORDER BY id");
         <a class="navbar-brand text-light" href="index.php">واجهة الخدمات</a>
         <div class="collapse navbar-collapse d-flex justify-content-between">
         <ul class="navbar-nav me-auto">
-            <li class=""><a class="btn btn-sm btn-outline-primary mx-1" href="services.php">إدارة الخدمات</a></li>
-            <li class=""><a class="btn btn-sm btn-outline-primary mx-1" href="index_screens.php">إدارة شاشات النوافذ</a></li>
-            <li class=""><a class="btn btn-sm btn-outline-primary mx-1" href="index_assign.php">تعيين شاشات النوافذ</a></li>
-            <li class=""><a class="btn btn-sm btn-outline-secondary mx-1" href="display.php">النداء</a></li>
-            <li class="nav-item"><a class="btn btn-sm btn-outline-warning mx-1" href="users.php">المستخدمين</a></li>
-            <!-- <li class="nav-item"><a class="btn btn-sm btn-outline-danger mx-1" href="printers.php">الدور</a></li> -->
+            <li class=""><a class="btn btn-sm btn-outline-primary mx-1" href="admin_dashboard.php">العودة للداشبورد</a></li>
         </ul>
         <a class="btn btn-outline-dark mx-1" href="php/logout_function.php">تسجيل خروج</a>
         </div>
@@ -36,7 +32,8 @@ $result = $conn->query("SELECT * FROM services ORDER BY id");
       <tbody>
         <?php while($row = $result->fetch_assoc()): ?>
         <tr>
-          <td><?= $row['id'] ?></td>
+          <td><?= $idnum ?></td>
+          <td><?=  $idnum += 1; ?></td>
           <td><?= htmlspecialchars($row['name']) ?></td>
           <td>
             <a href="php/edit_clinic.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-warning">تعديل</a>

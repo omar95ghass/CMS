@@ -19,7 +19,7 @@ try {
             COUNT(DISTINCT q.id) as active_queues
         FROM queue_users u
         LEFT JOIN user_clinics uc ON u.id = uc.user_id
-        LEFT JOIN queue q ON u.id = q.user_id AND q.date = CURDATE() AND q.status IN ('called', 'announced')
+        LEFT JOIN queue q ON u.id = q.user_id AND q.date = CURDATE() AND q.status IN ('called', 'announced', 'completed', 'serving', 'waiting')
         WHERE u.role = 'counter'
         GROUP BY u.id, u.window_number, u.status
         ORDER BY u.window_number

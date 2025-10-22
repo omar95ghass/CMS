@@ -9,10 +9,11 @@ $(document).ready(function() {
       console.log(data); 
       if (data.status === 'success') {
         table.empty();
+        idnum = 1;
         data.users.forEach(u => {
         table.append(`
             <tr>
-            <td>${u.id}</td>
+            <td>${idnum}</td>
             <td>${u.username}</td>
             <td>${u.role}</td>
             <td>${u.window_number || ''}</td>
@@ -23,6 +24,7 @@ $(document).ready(function() {
             </td>
             </tr>
         `);
+        idnum += 1;
         });
       }
     }, 'json');
