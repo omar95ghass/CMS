@@ -411,6 +411,7 @@
                     <button class="action-btn" id="startService">بدء الخدمة</button>
                     <button class="action-btn danger" id="completeService">إنهاء الخدمة</button>
                     <button class="action-btn info" id="transferBtn">تحويل</button>
+                    <button class="action-btn danger" id="closeWindowBtn">إغلاق الشباك</button>
                     <button class="action-btn danger" id="logoutBtn">تسجيل الخروج</button>
                 </div>
 
@@ -843,6 +844,13 @@
             }
         });
 
+        // إغلاق الشباك
+        document.getElementById('closeWindowBtn').addEventListener('click', function() {
+            if (confirm('هل أنت متأكد من إغلاق الشباك؟')) {
+                toggleWindowStatus();
+            }
+        });
+
         // دالة التحويل
         function confirmTransfer() {
             const number = document.getElementById('transferNumber').value;
@@ -994,6 +1002,78 @@
             box.innerHTML = message;
             box.style.display = "block";
             setTimeout(() => { box.style.display = "none"; }, 4000);
+        }
+
+        // تبديل حالة الشباك
+        function toggleWindowStatus() {
+            fetch('php/toggle_window_status.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    window_id: <?php echo $userId; ?>,
+                    status: 'closed'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showAlert('تم إغلاق الشباك بنجاح', 'success');
+                    // تحديث لون الزر
+                    const closeBtn = document.getElementById('closeWindowBtn');
+                    closeBtn.textContent = 'فتح الشباك';
+                    closeBtn.classList.remove('danger');
+                    closeBtn.classList.add('success');
+                    closeBtn.onclick = function() {
+                        if (confirm('هل أنت متأكد من فتح الشباك؟')) {
+                            openWindowStatus();
+                        }
+                    };
+                } else {
+                    showAlert('فشل في إغلاق الشباك: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error toggling window status:', error);
+                showAlert('حدث خطأ في إغلاق الشباك', 'error');
+            });
+        }
+
+        // فتح الشباك
+        function openWindowStatus() {
+            fetch('php/toggle_window_status.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    window_id: <?php echo $userId; ?>,
+                    status: 'available'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showAlert('تم فتح الشباك بنجاح', 'success');
+                    // تحديث لون الزر
+                    const closeBtn = document.getElementById('closeWindowBtn');
+                    closeBtn.textContent = 'إغلاق الشباك';
+                    closeBtn.classList.remove('success');
+                    closeBtn.classList.add('danger');
+                    closeBtn.onclick = function() {
+                        if (confirm('هل أنت متأكد من إغلاق الشباك؟')) {
+                            toggleWindowStatus();
+                        }
+                    };
+                } else {
+                    showAlert('فشل في فتح الشباك: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error opening window status:', error);
+                showAlert('حدث خطأ في فتح الشباك', 'error');
+            });
         }
 
         // تحديث البيانات كل 5 ثوان

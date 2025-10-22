@@ -49,10 +49,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->close();
         $conn->close();
         
-        echo '<div class="alert alert-success">تم حفظ الإعدادات بنجاح</div>';
+        $success_message = 'تم حفظ الإعدادات بنجاح';
         
     } catch (Exception $e) {
-        echo '<div class="alert alert-danger">خطأ في حفظ الإعدادات: ' . htmlspecialchars($e->getMessage()) . '</div>';
+        $error_message = 'خطأ في حفظ الإعدادات: ' . htmlspecialchars($e->getMessage());
     }
 }
 
@@ -537,6 +537,20 @@ try {
         </div>
         
         <div class="settings-body">
+            <?php if (isset($success_message)): ?>
+                <div class="alert alert-success alert-dismissible fade show">
+                    <?php echo $success_message; ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif; ?>
+            
+            <?php if (isset($error_message)): ?>
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <?php echo $error_message; ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif; ?>
+            
             <form method="POST" id="settingsForm">
                 <div class="row">
                     <div class="col-md-6">

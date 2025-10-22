@@ -8,6 +8,9 @@ header('Access-Control-Allow-Origin:*');
 header('Access-Control-Allow-Methods:POST,GET,OPTIONS');
 header('Access-Control-Allow-Headers:Content-Type');
 
+// تضمين اتصال قاعدة البيانات
+include 'dual_db.php';
+
 // تهيئة المتغيرات الأساسية خارج try
 $temp = null; 
 $errors = []; // تهيئة مصفوفة الأخطاء

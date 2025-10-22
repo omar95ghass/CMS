@@ -7,7 +7,7 @@ error_reporting(0);
 ini_set('display_errors', 0);
 
 try {
-    include 'db.php';
+    include 'dual_db.php';
     
     // جلب جميع الشبابيك مع حالتها
     $stmt = $conn->prepare("
@@ -30,10 +30,11 @@ try {
     }
     
     $stmt->execute();
-    $result = $stmt->get_result();
     
-    $windows = [];
-    while ($row = $result->fetch_assoc()) {
+    if ($conn instanceof mysqli) {
+        $result = $stmt->get_result();
+        $windows = [];
+        while ($row = $result->fetch_assoc()) {
         $status = 'available'; // افتراضي
         
         // تحديد الحالة بناءً على البيانات
@@ -50,9 +51,30 @@ try {
             'clinic' => $row['clinics'] ? explode(',', $row['clinics'])[0] : 'غير محدد',
             'active_queues' => (int)$row['active_queues']
         ];
+        }
+    } else {
+        // SQLite
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $windows = [];
+        foreach ($result as $row) {
+            $status = 'available'; // افتراضي
+            
+            // تحديد الحالة بناءً على البيانات
+            if ($row['window_status'] === 'closed') {
+                $status = 'closed';
+            } else if ($row['active_queues'] > 0) {
+                $status = 'serving';
+            }
+            
+            $windows[$row['id']] = [
+                'id' => $row['id'],
+                'window_number' => $row['window_number'],
+                'status' => $status,
+                'clinic' => $row['clinics'] ? explode(',', $row['clinics'])[0] : 'غير محدد',
+                'active_queues' => (int)$row['active_queues']
+            ];
+        }
     }
-    
-    $stmt->close();
     
     echo json_encode([
         'status' => 'success',

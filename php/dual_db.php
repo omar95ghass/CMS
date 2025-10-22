@@ -634,6 +634,13 @@ class DualDatabase {
     private function log($message) {
         $timestamp = date('Y-m-d H:i:s');
         $log_message = "[$timestamp] $message" . PHP_EOL;
+        
+        // إنشاء مجلد السجلات إذا لم يكن موجوداً
+        $log_dir = dirname($this->log_file);
+        if (!is_dir($log_dir)) {
+            mkdir($log_dir, 0755, true);
+        }
+        
         file_put_contents($this->log_file, $log_message, FILE_APPEND | LOCK_EX);
     }
     

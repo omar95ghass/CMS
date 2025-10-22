@@ -293,7 +293,7 @@
             right: 0;
             background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             color: white;
-            padding: 10px 15px;
+            padding: 15px;
             box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
             z-index: 1000;
             border-top: 3px solid #3498db;
@@ -401,7 +401,8 @@
         
         .window-card.closed {
             border-color: #e74c3c;
-            background: rgba(231, 76, 60, 0.1);
+            background: rgba(231, 76, 60, 0.2);
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.3);
         }
         
         .window-number {
@@ -420,27 +421,16 @@
             opacity: 0.8;
         }
         
-        .toggle-status-btn {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
+        .serving-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #f39c12;
+            margin: 5px 0;
         }
         
-        .toggle-status-btn:hover {
-            background: #2980b9;
-        }
-        
-        .toggle-status-btn.closed {
-            background: #e74c3c;
-        }
-        
-        .toggle-status-btn.closed:hover {
-            background: #c0392b;
+        .no-service {
+            color: #95a5a6;
+            font-style: italic;
         }
     </style>
 </head>
@@ -455,8 +445,13 @@
         
         <!-- المحتوى الرئيسي -->
         <div class="header-section mt-4">
-            <h1>مركز خدمة المواطن</h1>
-            <p>النافذة الواحدة - عرض الأدوار الحالية</p>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 15px;">
+                <img src="images/logo/logo.png" alt="شعار المركز" style="max-height: 60px; max-width: 120px; object-fit: contain;">
+                <div>
+                    <h1>مركز خدمة المواطن</h1>
+                    <p>النافذة الواحدة - عرض الأدوار الحالية</p>
+                </div>
+            </div>
         </div>
         
         <div class="content-section">
@@ -1010,10 +1005,31 @@
                 .then(data => {
                     if (data.status === 'success') {
                         windowsStatus = data.windows;
-                        displayWindowsStatus();
+                        // جلب معلومات الخدمة الحالية لكل شباك
+                        fetchCurrentServingInfo();
                     }
                 })
                 .catch(error => console.error('Error fetching windows status:', error));
+        }
+        
+        // جلب معلومات الخدمة الحالية
+        function fetchCurrentServingInfo() {
+            fetch('php/get_current_serving.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // دمج معلومات الخدمة مع حالة الشبابيك
+                        data.serving.forEach(serving => {
+                            if (windowsStatus[serving.window_id]) {
+                                windowsStatus[serving.window_id].serving_number = serving.number;
+                                windowsStatus[serving.window_id].clinic = serving.clinic;
+                                windowsStatus[serving.window_id].status = 'serving';
+                            }
+                        });
+                        displayWindowsStatus();
+                    }
+                })
+                .catch(error => console.error('Error fetching serving info:', error));
         }
         
         // عرض حالة الشبابيك
@@ -1031,18 +1047,26 @@
             statusBar.style.display = 'block';
             
             windowsGrid.innerHTML = Object.values(windowsStatus).map(window => {
-                const statusClass = window.status || 'available';
-                const statusText = getStatusText(window.status);
+                let statusClass = 'available';
+                let statusText = 'متاح';
+                
+                if (window.status === 'serving') {
+                    statusClass = 'serving';
+                    statusText = 'يقدم خدمة';
+                } else if (window.status === 'closed') {
+                    statusClass = 'closed';
+                    statusText = 'مغلق';
+                }
                 
                 return `
                     <div class="window-card ${statusClass}">
                         <div style="color: white !important;" class="window-number">شباك ${window.window_number}</div>
                         <div class="window-status">${statusText}</div>
-                        <div class="window-clinic">${window.clinic || 'غير محدد'}</div>
-                        <button class="toggle-status-btn ${window.status === 'closed' ? 'closed' : ''}" 
-                                onclick="toggleWindowStatus(${window.id})">
-                            ${window.status === 'closed' ? 'فتح الشباك' : 'إغلاق الشباك'}
-                        </button>
+                        ${window.serving_number ? 
+                            `<div class="serving-number">رقم ${window.serving_number}</div>
+                             <div class="window-clinic">${window.clinic || 'غير محدد'}</div>` :
+                            `<div class="no-service">لا يقدم خدمة حالياً</div>`
+                        }
                     </div>
                 `;
             }).join('');
@@ -1180,7 +1204,7 @@
     <div id="windowsStatusBar" class="windows-status-bar" style="display: none;">
         <button id="toggleBarBtn" class="toggle-bar-btn">⬇️ إخفاء الشريط</button>
         <div class="status-bar-header">
-            <h4>حالة الشبابيك</h4>
+            <h4>حالة الشبابيك الحالية</h4>
             <div class="status-legend">
                 <span class="legend-item">
                     <span class="status-indicator serving"></span>
