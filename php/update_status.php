@@ -15,7 +15,7 @@ try {
     $number = isset($input['number']) ? intval($input['number']) : 0;
     $status = isset($input['status']) ? $input['status'] : '';
     $date = isset($input['date']) ? $input['date'] : date('Y-m-d');
-    $userId = 7;
+    $userId = $_SESSION['user_id'];
     
     if ($number <= 0 || empty($status)) {
         echo json_encode(['status' => 'error', 'message' => 'Invalid parameters']);

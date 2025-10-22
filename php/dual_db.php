@@ -410,22 +410,33 @@ class DualDatabase {
         $conn = $this->getConnectionForDatabase($db_type);
         
         $columns = implode(',', array_keys($data));
-        $placeholders = ':' . implode(', :', array_keys($data));
-        
-        $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
         
         if ($db_type === 'mysql') {
+            // 🔹 استخدم علامات استفهام لـ mysqli
+            $placeholders = implode(',', array_fill(0, count($data), '?'));
+            $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
+            
             $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                throw new Exception("MySQL prepare failed: " . $conn->error . " | SQL: $sql");
+            }
+
             $types = str_repeat('s', count($data));
             $stmt->bind_param($types, ...array_values($data));
             $stmt->execute();
             return $conn->insert_id;
+            
         } else {
+            // 🔹 استخدم النمط الصحيح لـ PDO
+            $placeholders = ':' . implode(', :', array_keys($data));
+            $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
+            
             $stmt = $conn->prepare($sql);
             $stmt->execute($data);
             return $conn->lastInsertId();
         }
     }
+
     
     /**
      * تحديث بيانات في قاعدة بيانات محددة
@@ -613,18 +624,21 @@ class DualDatabase {
             return false;
         }
         
-        // التحقق من وجود سجلات في جدول المزامنة
-        try {
-            $result = $this->query("SELECT COUNT(*) as count FROM db_sync_log WHERE status = 'pending'");
+        error_log("DEBUG current_db = " . $this->current_db);
+
+        // شغّل الاستعلام مباشرة واطبع نوع النتيجة
+        $result = $this->query("SELECT COUNT(*) as count FROM db_sync_log WHERE status = 'pending'");
+        error_log("DEBUG result is " . (is_bool($result) ? ($result ? 'true' : 'false') : get_class($result)));
+
+        if ($result) {
             if ($this->current_db === 'mysql') {
                 $row = $result->fetch_assoc();
             } else {
                 $row = $result->fetch(PDO::FETCH_ASSOC);
             }
-            
-            return $row['count'] > 0;
-        } catch (Exception $e) {
-            return false;
+            error_log("DEBUG row: " . json_encode($row));
+        } else {
+            // error_log("DEBUG MySQL/PDO error: " . $this->getLastError()); // أو $this->connection->error حسب wrapper
         }
     }
     
@@ -634,6 +648,17 @@ class DualDatabase {
     private function log($message) {
         $timestamp = date('Y-m-d H:i:s');
         $log_message = "[$timestamp] $message" . PHP_EOL;
+
+        error_log("[LOG DEBUG] getcwd(): " . getcwd());
+        error_log("[LOG DEBUG] __DIR__: " . __DIR__);
+        error_log("[LOG DEBUG] configured log_file: " . $this->log_file);
+        error_log("[LOG DEBUG] realpath(log_file): " . (realpath($this->log_file) ?: 'NULL'));
+        error_log("[LOG DEBUG] is_file: " . (is_file($this->log_file) ? 'yes' : 'no'));
+        error_log("[LOG DEBUG] is_dir(logs dir): " . (is_dir(dirname($this->log_file)) ? 'yes' : 'no'));
+        error_log("[LOG DEBUG] is_writable(dirname): " . (is_writable(dirname($this->log_file)) ? 'yes' : 'no'));
+        error_log("[LOG DEBUG] open_basedir: " . ini_get('open_basedir'));
+
+
         file_put_contents($this->log_file, $log_message, FILE_APPEND | LOCK_EX);
     }
     
